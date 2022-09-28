@@ -1,6 +1,6 @@
 // the role that will be running the lambdas and accessing the buckets and db
 resource "aws_iam_role" "lambda_role" {
-  name = "photoalbumv2_lambda_role"
+  name = "photoalbumv2_lambda_role-${terraform.workspace}"
 
   assume_role_policy = <<EOF
 {
@@ -23,7 +23,7 @@ EOF
 # //add inline policy that allows writing to logs and invoking lambda functions
 
 resource "aws_iam_role_policy" "inline_policy" {
-  name = "inline_policy"
+  name = "inline_policy-${terraform.workspace}"
   role = aws_iam_role.lambda_role.id
 
   policy = <<-EOF

@@ -55,7 +55,7 @@ data "archive_file" "lambda" {
 
 resource "aws_lambda_function" "resizer" {
   filename      = "../lambda.zip"
-  function_name = "resizerv2"
+  function_name = "resizerv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "resizer.handler"
   runtime = "nodejs14.x"
