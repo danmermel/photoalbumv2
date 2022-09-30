@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "kuuid": "^1.0.1",
     "sharp": "^0.31.0"
   }
 }

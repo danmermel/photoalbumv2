@@ -52,20 +52,20 @@ resource "aws_iam_role_policy" "inline_policy" {
 # //add managed policies that allow access to db, reko and s3
 # //these could definitely be more restrictive
 
-# resource "aws_iam_role_policy_attachment" "dynamodb_policy" {
-#   role       = aws_iam_role.reko_role.name
-#   policy_arn = data.aws_iam_policy.AmazonDynamoDBFullAccess.arn
-# }
+resource "aws_iam_role_policy_attachment" "dynamodb_policy" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = data.aws_iam_policy.AmazonDynamoDBFullAccess.arn
+}
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = data.aws_iam_policy.AmazonS3FullAccess.arn
 }
 
-# resource "aws_iam_role_policy_attachment" "reko_policy" {
-#   role       = aws_iam_role.reko_role.name
-#   policy_arn = data.aws_iam_policy.AmazonRekognitionFullAccess.arn
-# }
+resource "aws_iam_role_policy_attachment" "reko_policy" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = data.aws_iam_policy.AmazonRekognitionFullAccess.arn
+}
 
 
 # resource "aws_iam_role" "photoalbum_group_role" {

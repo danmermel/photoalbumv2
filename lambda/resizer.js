@@ -9,7 +9,7 @@ const fs = require('fs');
 
 const BUCKET = process.env.BUCKET;
 const THUMB_BUCKET = process.env.THUMB_BUCKET;
-//const REKO_LAMBDA = process.env.REKO_LAMBDA;
+const REKO_LAMBDA = process.env.REKO_LAMBDA;
 
 exports.handler = async function (event) {
 
@@ -33,23 +33,23 @@ exports.handler = async function (event) {
       }).promise()
 
       console.log("written to s3!");
-      //   //now sending it to reko for keyword recognition
-      //   lambda.invoke ({"FunctionName": REKO_LAMBDA, 
-      //                   "Payload":JSON.stringify({"key":key})},
-      //                   callback
-      //                 );
-      // }).catch(err => callback(err));
+      //now sending it to reko for keyword recognition
+      await lambda.invoke({
+        "FunctionName": REKO_LAMBDA,
+        "Payload": JSON.stringify({ "key": key })
+      }).promise();
+      console.log("invoked reko lambda with key ", key, "and lambda name ", REKO_LAMBDA)
 
-    } else {  // not a jpg so insert a placeholder image
-      console.log("inserting placeholder...")
-      const file = fs.readFileSync('./play.jpg');
-      await s3.putObject({
-        Body: file,
-        Bucket: THUMB_BUCKET,
-        ACL: "private",
-        ContentType: 'image/jpg',
-        Key: key,
-      }).promise()
-    }
+  } else {  // not a jpg so insert a placeholder image
+    console.log("inserting placeholder...")
+    const file = fs.readFileSync('./play.jpg');
+    await s3.putObject({
+      Body: file,
+      Bucket: THUMB_BUCKET,
+      ACL: "private",
+      ContentType: 'image/jpg',
+      Key: key,
+    }).promise()
   }
+}
 }

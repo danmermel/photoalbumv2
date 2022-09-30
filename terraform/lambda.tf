@@ -11,26 +11,27 @@ data "archive_file" "lambda" {
 // Not so good if you have more complicated scenarios because here you have the code and the infra in one place... if you want 
 //more separation you need a more complicated setup, e.g. https://johnroach.io/2020/09/04/deploying-lambda-functions-with-terraform-just-dont/ 
 
-# resource "aws_lambda_function" "photoalbum_reko" {
-#   filename      = "../lambda/rekognition/reko.zip"
-#   function_name = "photoalbum_reko"
-#   role          = aws_iam_role.reko_role.arn
-#   handler       = "index.handler"
-#   runtime       = "nodejs12.x"
-#   timeout       = 10
-#   source_code_hash = filebase64sha256("../lambda/rekognition/reko.zip")
+resource "aws_lambda_function" "reko" {
+  filename      = data.archive_file.lambda.output_path
+  function_name = "rekov2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "reko.handler"
+  runtime = "nodejs16.x"
+  timeout = 10
+  source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
 
-#   environment {
-#     variables = {
-#       BUCKET = aws_s3_bucket.photoalbum-images.id
-#       TABLE = aws_dynamodb_table.photoalbum-images-db.id
-#     }
-#   }
-# }
+  environment {
+    variables = {
+      BUCKET = aws_s3_bucket.photoalbum-images.id
+      TABLE = aws_dynamodb_table.photoalbumv2-tags-db.id
+    }
+  }
+}
 
-# output "rekoLambda"  {
-#   value = aws_lambda_function.photoalbum_reko.function_name
-# }
+resource "aws_cloudwatch_log_group" "lambdaLGreko" {
+  name              = "/aws/lambda/${aws_lambda_function.reko.function_name}"
+  retention_in_days = 7
+}
 
 
 # resource "aws_lambda_function" "photoalbum_remover" {
@@ -54,18 +55,20 @@ data "archive_file" "lambda" {
 # }
 
 resource "aws_lambda_function" "resizer" {
-  filename      = "../lambda.zip"
+  filename      = data.archive_file.lambda.output_path
   function_name = "resizerv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "resizer.handler"
-  runtime = "nodejs14.x"
+  runtime = "nodejs16.x"
   timeout = 10
+  source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
+
 
   environment {
     variables = {
       THUMB_BUCKET = aws_s3_bucket.photoalbum-thumbs.id
       BUCKET = aws_s3_bucket.photoalbum-images.id
-      # REKO_LAMBDA = aws_lambda_function.photoalbum_reko.id
+      REKO_LAMBDA = aws_lambda_function.reko.id
     }
   }
 }
