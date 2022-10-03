@@ -7,10 +7,13 @@ const dynamodb = new AWS.DynamoDB({ "region": "eu-west-1" });
 const BUCKET = process.env.BUCKET
 const TABLE = process.env.TABLE
 
-function prepareData(image_id, data) {
+function prepareData(image_id, data, locarray) {
 
   var kuuid = require('kuuid')
-  var wordList = []
+  //add the location words received, if any
+  var wordList = locarray.map (function (e){
+    return {"name": e, "confidence": 100}
+  })
   console.log("preparing data:")
   console.log(image_id)
   console.log(data)
@@ -71,7 +74,9 @@ exports.handler = async function (event) {
 
   console.log(JSON.stringify(event));
   const key = event.key;
+  const locarray = event.locarray;
   console.log("key is ", key);
+  console.log("locarray is ", locarray)
 
   //first see if the object has already been reko-gnised
 
@@ -96,7 +101,7 @@ exports.handler = async function (event) {
   console.log(rekoParams)
   const labels = await rekognition.detectLabels(rekoParams).promise()
   //prepare data for insertion
-  const params = prepareData(key, labels);
+  const params = prepareData(key, labels, locarray);
   //console.log(JSON.stringify(params));
   //call dynamodb to save the data
   await dynamodb.batchWriteItem(params).promise()
