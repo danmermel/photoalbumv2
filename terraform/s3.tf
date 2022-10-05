@@ -1,6 +1,6 @@
 //bucket for the photos
 resource "aws_s3_bucket" "photoalbum-images" {
-  bucket = "photoalbumv2-images-${terraform.workspace}"
+  bucket = "${var.bucket_prefix}-images-${terraform.workspace}"
 }
 
 # resource "aws_s3_bucket_cors_configuration" "photoalbum-images-cors" {
@@ -19,7 +19,7 @@ output "photoBucket" {
 
 //bucket for the thumbnails
 resource "aws_s3_bucket" "photoalbum-thumbs" {
-  bucket = "photoalbumv2-thumbs-${terraform.workspace}"
+  bucket = "${var.bucket_prefix}-thumbs-${terraform.workspace}"
 }
 
 # resource "aws_s3_bucket_cors_configuration" "photoalbum-thumbs-cors" {
