@@ -4,3 +4,7 @@ terraform.tfvars
 terraform.tfstate
 terraform/terraform.tfstate.backup
 *.zip
+config.json
+*.jpeg
+*.jpg 
+*.JPG

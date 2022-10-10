@@ -11,7 +11,6 @@
     </v-app-bar>
     <v-main>
       <v-container fluid>
-        {{$store.state.profile.profile}}
         <Nuxt />
       </v-container>
     </v-main>
