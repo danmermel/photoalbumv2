@@ -1,6 +1,6 @@
 <template>
   <v-list>
-    <v-list-item :href="`/album/${album}`" nuxt="true" v-for="album in albums" :key="album">
+    <v-list-item :href="`/album/${album}`" nuxt v-for="album in albums" :key="album">
       <v-list-item-content>
         <v-list-item-title>{{ album }}</v-list-item-title>
       </v-list-item-content>
