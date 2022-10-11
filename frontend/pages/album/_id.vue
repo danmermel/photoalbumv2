@@ -39,12 +39,26 @@ export default {
       return;
     }
 
+
     const album = route.params.id
+
+    // if this is the same album as we have in the cache, we needn't call a Lambda
+    if (profile.album === album) {
+      return {
+        images: profile.albumImages,
+        album,
+        endReached: profile.endReached
+      }
+    }
+
+    // store the current album in the store
+    store.commit('profile/saveCurrentAlbum', album)
 
     // fetch albums from the API
     const url = `${config.singleAlbumAPIFunctionUrl.value}?apikey=${profile.apikey}&album=${album}`;
     const response = await $axios.$get(url);
-    console.log(response)
+    store.commit('profile/saveAlbumImages', response.images)
+    store.commit('profile/saveAlbumEndReached', response.endReached)
     return { images: response.images, album, endReached: response.endReached };
   },
   methods: {
@@ -56,6 +70,8 @@ export default {
       const response = await this.$axios.$get(url);
       this.images = this.images.concat(response.images)
       this.endReached = response.endReached
+      this.$store.commit('profile/saveAlbumImages', this.images)
+      this.$store.commit('profile/saveAlbumEndReached', this.endReached)
     }
   }
 };

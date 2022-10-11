@@ -13,6 +13,18 @@ export const mutations = {
     state.profile = {}
     state.profile.apikey = apikey
     localstorage.saveProfile(state.profile)
+  },
+  saveCurrentAlbum(state, album) {
+    state.profile.album = album
+    localstorage.saveProfile(state.profile)
+  },
+  saveAlbumImages(state, images) {
+    state.profile.albumImages = images
+    localstorage.saveProfile(state.profile)
+  },
+  saveAlbumEndReached(state, endReached) {
+    state.profile.endReached = endReached
+    localstorage.saveProfile(state.profile)
   }
 }
   
