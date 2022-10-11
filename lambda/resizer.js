@@ -19,7 +19,7 @@ exports.handler = async function (event) {
   console.log(JSON.stringify(event));
   if (event.Records[0].s3.object.size > 0) {
     const key = event.Records[0].s3.object.key;
-    if (key.match(/\.jpg$|\.png$/i)) {      // it is a jpg or png so make a thumbnail
+    if (key.match(/\.jpg$|\.png$|\.jpeg$|\.webp$/i)) {      // it is a jpg or png so make a thumbnail
       const s3obj = await s3.getObject({ Bucket: BUCKET, Key: key }).promise()
 
       const resizedimg = await sharp(s3obj.Body)
