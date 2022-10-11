@@ -41,6 +41,7 @@ export default {
 
 
     const album = route.params.id
+    store.commit('profile/saveMode', 'singlealbum')
 
     // if this is the same album as we have in the cache, we needn't call a Lambda
     if (profile.album === album) {

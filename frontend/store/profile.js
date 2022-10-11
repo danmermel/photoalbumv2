@@ -25,6 +25,10 @@ export const mutations = {
   saveAlbumEndReached(state, endReached) {
     state.profile.endReached = endReached
     localstorage.saveProfile(state.profile)
+  },
+  saveMode(state, mode) {
+    state.profile.mode = mode
+    localstorage.saveProfile(state.profile)
   }
 }
   

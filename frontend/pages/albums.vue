@@ -26,6 +26,7 @@ export default {
     }
 
     // fetch albums from the API
+    store.commit('profile/saveMode', 'albumlist')
     const url = `${config.listAlbumsAPIFunctionUrl.value}?apikey=${profile.apikey}`;
     const response = await $axios.$get(url);
     return { albums: response.albums };
