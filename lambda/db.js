@@ -20,6 +20,25 @@ var read = async function (key) {
 
 }
 
+var readtags = async function (key) {
+
+  var obj = {
+    TableName: TABLE,
+    IndexName: "image_id-index",
+    KeyConditionExpression: "image_id = :k",
+    ExpressionAttributeValues: { ":k": { "S": key } },
+    ProjectionExpression: "keyword"
+  }
+
+  let resp =  await dynamodb.query(obj).promise();
+  resp = resp.Items.map(function (i){
+    return i.keyword.S
+  })
+
+  return resp
+
+}
+
 var remove = async function (items) {
 
   //this is the object  you have to build to insert into dynamodb
@@ -47,5 +66,6 @@ var remove = async function (items) {
 
 module.exports = {
   read: read,
+  readtags: readtags,
   remove: remove
 };

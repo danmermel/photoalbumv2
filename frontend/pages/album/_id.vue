@@ -2,17 +2,17 @@
   <div>
     <v-row>
       <v-col
-        v-for="n in images"
+        v-for="n in computedImages"
         :key="n.key"
         class="d-flex child-flex"
         cols="6"
-      >
+      > <NuxtLink :to="`/album/${album}/image/${n.filename}`">
         <v-img
           :src="n.url"
           aspect-ratio="1"
           class="grey lighten-2"
         >
-        </v-img>
+        </v-img></NuxtLink>
       </v-col>
     </v-row>
     <v-btn v-if="!endReached" @click="loadMore">Load More</v-btn>
@@ -61,6 +61,15 @@ export default {
     store.commit('profile/saveAlbumImages', response.images)
     store.commit('profile/saveAlbumEndReached', response.endReached)
     return { images: response.images, album, endReached: response.endReached };
+  },
+  computed: {
+    computedImages: function () {
+      return this.images.map(function (i) {
+        //get the last string after the slash
+        i.filename = i.key.match(/\/(.*$)/)[1]
+        return i
+      })
+    }
   },
   methods: {
     loadMore: async function() {
