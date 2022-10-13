@@ -4,7 +4,9 @@
       <v-col
         v-for="n in computedImages"
         :key="n.key"
-        class="d-flex child-flex"
+        sm="4"
+        lg="1"
+        md="2"
         cols="6"
       > <NuxtLink :to="`/album/${album}/image/${n.filename}`">
         <v-img
@@ -14,8 +16,11 @@
         >
         </v-img></NuxtLink>
       </v-col>
+      <v-col>
+        <v-btn v-if="!endReached" @click="loadMore">Load More</v-btn>
+      </v-col>
     </v-row>
-    <v-btn v-if="!endReached" @click="loadMore">Load More</v-btn>
+    
   </div>
 
 </template>
