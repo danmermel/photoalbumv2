@@ -1,12 +1,10 @@
 const AWS = require('aws-sdk');
 const db = require('./db.js');
-
 const rekognition = new AWS.Rekognition({ "region": "eu-west-1" });
-const dynamodb = new AWS.DynamoDB({ "region": "eu-west-1" });
-
 const BUCKET = process.env.BUCKET
 const TABLE = process.env.TABLE
 
+// prepare our tags and location data into a form required for DynamoDB insertion
 function prepareData(image_id, data, locarray) {
 
   var kuuid = require('kuuid')
@@ -104,5 +102,5 @@ exports.handler = async function (event) {
   const params = prepareData(key, labels, locarray);
   //console.log(JSON.stringify(params));
   //call dynamodb to save the data
-  await dynamodb.batchWriteItem(params).promise()
+  await db.write(params)
 }

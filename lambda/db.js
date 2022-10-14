@@ -7,7 +7,6 @@ const TABLE = process.env.TABLE
 var docClient = new AWS.DynamoDB.DocumentClient()
 
 var read = async function (key) {
-
   var obj = {
     TableName: TABLE,
     IndexName: "image_id-index",
@@ -15,28 +14,22 @@ var read = async function (key) {
     ExpressionAttributeValues: { ":k": { "S": key } },
     ProjectionExpression: "id"
   }
-
   return await dynamodb.query(obj).promise();
-
 }
 
 var readtags = async function (key) {
-
-  var obj = {
+  const obj = {
     TableName: TABLE,
     IndexName: "image_id-index",
     KeyConditionExpression: "image_id = :k",
     ExpressionAttributeValues: { ":k": { "S": key } },
     ProjectionExpression: "keyword"
   }
-
   let resp =  await dynamodb.query(obj).promise();
   resp = resp.Items.map(function (i){
     return i.keyword.S
   })
-
   return resp
-
 }
 
 var remove = async function (items) {
@@ -64,8 +57,10 @@ var remove = async function (items) {
   await dynamodb.batchWriteItem(params).promise();
 }
 
+const write = async function(params) {
+  return await dynamodb.batchWriteItem(params).promise()
+}
+
 module.exports = {
-  read: read,
-  readtags: readtags,
-  remove: remove
+  read, readtags, remove, write
 };
