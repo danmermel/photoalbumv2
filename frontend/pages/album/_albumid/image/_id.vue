@@ -1,11 +1,24 @@
 <template>
-  <div>
-    <v-img :src="viewurl" aspect-ratio="1" class="grey lighten-2"> </v-img>
-    {{ tags }}
-  </div>
+  <v-container>
+    <v-row>
+      <v-img :src="viewurl" class="grey lighten-2"> </v-img>
+    </v-row>
+    <v-row>
+      <v-chip small v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
+    </v-row>
+    <v-row>
+      <v-btn color="success" @click="download">Download</v-btn>
+    </v-row>
+  </v-container>
 </template>
-  
-  <script>
+
+<style>
+.v-chip {
+  margin: 3px
+}
+</style>
+
+<script>
 const config = require("../../../../config.json");
 export default {
   data: function () {
@@ -35,5 +48,10 @@ export default {
     const response = await $axios.$get(url);
     return response;
   },
+  methods: {
+    download: function() {
+      window.location.href=this.downloadurl
+    }
+  }
 };
 </script>
