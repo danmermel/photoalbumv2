@@ -1,11 +1,25 @@
 <template>
-  <v-list>
-    <v-list-item :href="`/album/${album}`" nuxt v-for="album in albums" :key="album">
-      <v-list-item-content>
-        <v-list-item-title>{{ album }}</v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-  </v-list>
+  <div>
+    <v-list>
+      <v-list-item
+        :href="`/album/${album}`"
+        nuxt
+        v-for="album in albums"
+        :key="album"
+      >
+        <v-list-item-content>
+          <v-list-item-title>{{ album }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+
+    <v-text-field
+      v-model="newAlbumName"
+      label="New Album name"
+      required
+    ></v-text-field>
+    <v-btn :disabled="buttonDisable" @click="createAlbum">Create</v-btn>
+  </div>
 </template>
 
 <script>
@@ -14,6 +28,8 @@ export default {
   data: function () {
     return {
       albums: [],
+      newAlbumName: "",
+      buttonDisable:false
     };
   },
   async asyncData({ redirect, store, $axios }) {
@@ -26,10 +42,31 @@ export default {
     }
 
     // fetch albums from the API
-    store.commit('profile/saveMode', 'albumlist')
+    store.commit("profile/saveMode", "albumlist");
     const url = `${config.listAlbumsAPIFunctionUrl.value}?apikey=${profile.apikey}`;
     const response = await $axios.$get(url);
     return { albums: response.albums };
+  },
+  methods: {
+    createAlbum: async function () {
+      this.buttonDisable = true
+      const profile = this.$store.state.profile.profile;
+      const url = `${config.createAlbumAPIFunctionUrl.value}?apikey=${profile.apikey}&album=${this.newAlbumName}`;
+      try {
+        const response = await this.$axios.$get(url);
+        this.$store.commit("alert/insertAlert", {
+          alertMessage: "Album Created! Redirecting..",
+          alertType:"success"
+        });
+        this.$router.push(`/album/${this.newAlbumName}`);
+      } catch (e) {
+        console.log(e);
+        this.$store.commit("alert/insertAlert", {
+          alertMessage: "Could not create Album.",
+        });
+        this.buttonDisable = false
+      }
+    },
   },
 };
 </script>

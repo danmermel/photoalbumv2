@@ -9,7 +9,6 @@ const API_KEY = process.env.API_KEY;
 
 exports.handler = async function (spec) {
 
-  let albums;
   // first check if the API KEY is correct
   if (!spec.queryStringParameters || !spec.queryStringParameters.apikey || spec.queryStringParameters.apikey !== API_KEY) {
     return { statusCode: 401, body: '{"ok": false}' }

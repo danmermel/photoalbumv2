@@ -5,8 +5,8 @@
         v-for="n in computedImages"
         :key="n.key"
         sm="4"
-        lg="1"
-        md="2"
+        lg="2"
+        md="3"
         cols="6"
       > <NuxtLink :to="`/album/${album}/image/${n.filename}`">
         <v-img

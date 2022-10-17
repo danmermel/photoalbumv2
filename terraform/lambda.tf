@@ -135,6 +135,23 @@ output "singleImageAPIFunctionUrl" {
   value = module.singleImageAPI.FunctionUrl
 }
 
+// Create Album API
+module "createAlbumAPI" {
+  source        = "./modules/lambdaPackage"
+  filename      = data.archive_file.lambda.output_path
+  function_name = "createalbumv2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "createalbum.handler"
+  env_variables = {
+    BUCKET = aws_s3_bucket.photoalbum-images.id
+    API_KEY = var.API_KEY
+  }
+}
+
+output "createAlbumAPIFunctionUrl" {
+  value = module.createAlbumAPI.FunctionUrl
+}
+
 
 // give s3 permission to execute lambda
 

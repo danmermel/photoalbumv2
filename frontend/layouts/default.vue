@@ -10,6 +10,7 @@
       </v-toolbar-title>
     </v-app-bar>
     <v-main>
+      <Alert />
       <v-container fluid>
         <Nuxt />
       </v-container>
