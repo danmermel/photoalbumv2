@@ -60,9 +60,9 @@ export default {
         });
         this.$router.push(`/album/${this.newAlbumName}`);
       } catch (e) {
-        console.log(e);
+        const j = e.response.data
         this.$store.commit("alert/insertAlert", {
-          alertMessage: "Could not create Album.",
+          alertMessage: `Could not create Album. ${j.msg}`,
         });
         this.buttonDisable = false
       }
