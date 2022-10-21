@@ -1,5 +1,22 @@
 <template>
-  <div>
+  <v-container>
+    <v-row v-if="uploading">
+      <v-progress-linear :value="100*progress/files.length"></v-progress-linear>
+      <div>
+        {{ progress }} /  {{ files.length }}
+      </div>
+    </v-row>
+    <v-row v-if="uploadPhotos && !uploading">
+        <v-file-input v-model="files"
+                small-chips outlined dense multiple 
+                label="Add photos to this Album">
+              </v-file-input>
+              <v-btn  @click="uploadPhotos=false">Cancel</v-btn>
+              <v-btn @click="onFileChange()">Upload </v-btn>
+    </v-row>
+    <v-row v-if="!uploadPhotos">
+      <v-btn @click="uploadPhotos=true">Upload</v-btn>
+    </v-row>
     <v-row>
       <v-col
         v-for="n in computedImages"
@@ -21,7 +38,7 @@
       </v-col>
     </v-row>
     
-  </div>
+  </v-container>
 
 </template>
 
@@ -30,6 +47,11 @@ const config = require("../../config.json");
 export default {
   data: function () {
     return {
+      uploadPhotos: false,
+      uploading: false,
+      progress: 0,
+      failures: [],
+      files: [],
       images: [],
       album: '',
       endReached: false
@@ -87,6 +109,62 @@ export default {
       this.endReached = response.endReached
       this.$store.commit('profile/saveAlbumImages', this.images)
       this.$store.commit('profile/saveAlbumEndReached', this.endReached)
+    },
+    onFileChange: async function() {
+      this.uploading = true
+      this.progress = 0
+      this.failures = []
+      const files = this.files
+      const profile = this.$store.state.profile.profile;
+      for(let file of files) {
+        console.log('Uploading',file.name)
+        console.log('file', file)
+        console.log('typeof file', typeof file)
+        let response
+
+        try {
+          // get a presigned URL for upload
+          const url = `${config.uploadAPIFunctionUrl.value}?apikey=${profile.apikey}&album=${this.album}&key=${file.name}`;
+          response = await this.$axios.$get(url);
+          const uploadURL = response.url
+
+          // put to that presigned URL
+          const headers = {
+            "Content-Type": file.type
+          };
+          response = await this.$axios.$put(uploadURL, file, {
+            headers: headers,
+          });
+        } catch (e) {
+          console.log('error', e)
+          this.failures.push(file.name)
+        }
+        this.progress++
+      }
+      this.uploading = false
+      this.uploadPhotos = false
+      this.files = []
+
+      // invalidate the cache to allow the page to reload the album's contents
+      this.$store.commit('profile/saveCurrentAlbum', '')
+      const self = this
+
+      // don't refresh immediately otherwise the thumbnails won't be built yet
+      setTimeout(function() {
+        self.$nuxt.refresh()
+      }, 3000)
+
+      // in the meantime, show the user a success alert
+      let msg = "Upload complete! Building thumbnails.."
+      let alertType = "success"
+      if (this.failures.length > 0) {
+        msg = `Upload complete with some failures ${this.failures}`
+        alertType = "warning"
+      }
+      this.$store.commit("alert/insertAlert", {
+        alertMessage: msg,
+        alertType
+      });
     }
   }
 };

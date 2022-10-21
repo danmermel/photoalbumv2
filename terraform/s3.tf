@@ -3,16 +3,16 @@ resource "aws_s3_bucket" "photoalbum-images" {
   bucket = "${var.bucket_prefix}-images-${terraform.workspace}"
 }
 
-# resource "aws_s3_bucket_cors_configuration" "photoalbum-images-cors" {
-#   bucket = aws_s3_bucket.photoalbum-images.id
-#   cors_rule {
+resource "aws_s3_bucket_cors_configuration" "photoalbum-images-cors" {
+  bucket = aws_s3_bucket.photoalbum-images.id
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST", "DELETE", "HEAD", "GET"]
+    allowed_origins = ["*"]
+    expose_headers  = ["ETag"]
+  }
+}
 
-#   allowed_headers = ["*"]
-#   allowed_methods = ["PUT", "POST", "DELETE", "HEAD", "GET"]
-#   allowed_origins = ["*"]
-#   expose_headers  = ["ETag"]
-#   }
-# }
 output "photoBucket" {
   value = aws_s3_bucket.photoalbum-images.id
 }
