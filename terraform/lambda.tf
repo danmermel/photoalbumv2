@@ -82,6 +82,34 @@ output "resizeLambda"  {
   value = aws_lambda_function.resizer.function_name
 }
 
+//lambda that gets triggered by an image deletion and removes thumbnail and db data
+resource "aws_lambda_function" "remover" {
+  filename      = data.archive_file.lambda.output_path
+  function_name = "removerv2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "remover.handler"
+  runtime = "nodejs16.x"
+  timeout = 10
+  source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
+
+
+  environment {
+    variables = {
+      THUMB_BUCKET = aws_s3_bucket.photoalbum-thumbs.id
+      TABLE = aws_dynamodb_table.photoalbumv2-tags-db.id
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_group" "lambdaLGremover" {
+  name              = "/aws/lambda/${aws_lambda_function.remover.function_name}"
+  retention_in_days = 7
+}
+
+output "removeLambda"  {
+  value = aws_lambda_function.remover.function_name
+}
+
 // List Albums API
 module "listAlbumsAPI" {
   source        = "./modules/lambdaPackage"
@@ -169,6 +197,23 @@ output "uploadAPIFunctionUrl" {
   value = module.uploadAPI.FunctionUrl
 }
 
+// Delete image API
+module "deleteAPI" {
+  source        = "./modules/lambdaPackage"
+  filename      = data.archive_file.lambda.output_path
+  function_name = "deletev2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "delete.handler"
+  env_variables = {
+    BUCKET = aws_s3_bucket.photoalbum-images.id
+    API_KEY = var.API_KEY
+  }
+}
+
+output "deleteAPIFunctionUrl" {
+  value = module.deleteAPI.FunctionUrl
+}
+
 
 // give s3 permission to execute lambda
 
@@ -180,13 +225,13 @@ output "uploadAPIFunctionUrl" {
 #   source_arn    = aws_s3_bucket.photoalbum-images.arn
 # }
 
-# resource "aws_lambda_permission" "allow_s3_remover" {
-#   statement_id  = "AllowS3ToExecuteRemover"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.photoalbum_remover.function_name
-#   principal     = "s3.amazonaws.com"
-#   source_arn    = aws_s3_bucket.photoalbum-images.arn
-# }
+resource "aws_lambda_permission" "allow_s3_remover" {
+  statement_id  = "AllowS3ToExecuteRemover"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.remover.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.photoalbum-images.arn
+}
 
 resource "aws_lambda_permission" "allow_s3_resizer" {
   statement_id  = "AllowS3ToExecuteResizer"

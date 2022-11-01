@@ -71,7 +71,10 @@ export default {
     store.commit('profile/saveMode', 'singlealbum')
 
     // if this is the same album as we have in the cache, we needn't call a Lambda
+    console.log("Current cache Album is ", profile.album)
+    console.log("VIsiting album ", album)
     if (profile.album === album) {
+      console.log("Retrieving from cache")
       return {
         images: profile.albumImages,
         album,

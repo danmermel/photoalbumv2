@@ -46,13 +46,13 @@ resource "aws_s3_bucket_notification" "photoalbum-triggers" {
     events              = ["s3:ObjectCreated:*"]
   }
 
-  # lambda_function {
-  #   lambda_function_arn = aws_lambda_function.photoalbum_remover.arn
-  #   events        = ["s3:ObjectRemoved:*"]
-  # }
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.remover.arn
+    events        = ["s3:ObjectRemoved:*"]
+  }
 
   depends_on = [
-    # aws_lambda_permission.allow_s3_remover,
+    aws_lambda_permission.allow_s3_remover,
     aws_lambda_permission.allow_s3_resizer
   ]
 }
