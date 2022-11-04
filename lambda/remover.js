@@ -5,6 +5,7 @@ const s3 = new AWS.S3({
 });
 
 const THUMB_BUCKET = process.env.THUMB_BUCKET
+const LARGE_THUMBS_BUCKET = process.env.LARGE_THUMBS_BUCKET
 
 exports.handler = async function (event) {
   console.log(JSON.stringify(event));
@@ -12,7 +13,7 @@ exports.handler = async function (event) {
 
   // delete the thumbnail associated with the deleted image
   await s3.deleteObject({ Key: key, Bucket: THUMB_BUCKET }).promise()
-
+  await s3.deleteObject({ Key: key, Bucket: LARGE_THUMBS_BUCKET }).promise()
 
   //  delete the db data associated with the deleted image
   try {

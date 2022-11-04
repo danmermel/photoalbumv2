@@ -6,7 +6,7 @@
         @click="$refs.drawer.show = !$refs.drawer.show"
       ></v-app-bar-nav-icon>
       <v-toolbar-title @click="onHome">
-        Photos <span v-if="this.$store.state.profile.profile.mode === 'singlealbum' && this.$store.state.profile.profile.album"> - {{ this.$store.state.profile.profile.album }}</span>
+        Photos <span v-if="this.$store.state.profile.profile && this.$store.state.profile.profile.mode === 'singlealbum' && this.$store.state.profile.profile.album"> - {{ this.$store.state.profile.profile.album }}</span>
       </v-toolbar-title>
     </v-app-bar>
     <v-main>

@@ -12,6 +12,7 @@ const fs = require('fs');
 
 const BUCKET = process.env.BUCKET;
 const THUMB_BUCKET = process.env.THUMB_BUCKET;
+const LARGE_THUMB_BUCKET = process.env.LARGE_THUMB_BUCKET;
 const REKO_LAMBDA = process.env.REKO_LAMBDA;
 
 exports.handler = async function (event) {
@@ -34,6 +35,19 @@ exports.handler = async function (event) {
         ContentType: 'image/jpg',
         Key: key,
       }).promise()
+
+      // create a larger version of the thumbnail, preserving the aspect ratio
+      const largeimg = await sharp(s3obj.Body)
+        .resize({ width: 1500, height: 1500, fit: 'inside' })
+        .toFormat('jpg')
+        .toBuffer()
+      await s3.putObject({
+          Body: largeimg,
+          Bucket: LARGE_THUMB_BUCKET,
+          ACL: "private",
+          ContentType: 'image/jpg',
+          Key: key,
+        }).promise()
 
       //we have the image, so now extract the exif data 
       const exifdata = await exifr.parse(s3obj.Body)

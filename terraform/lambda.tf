@@ -60,13 +60,12 @@ resource "aws_lambda_function" "resizer" {
   role          = aws_iam_role.lambda_role.arn
   handler       = "resizer.handler"
   runtime = "nodejs16.x"
-  timeout = 10
+  timeout = 30
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
-
-
   environment {
     variables = {
       THUMB_BUCKET = aws_s3_bucket.photoalbum-thumbs.id
+      LARGE_THUMB_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
       BUCKET = aws_s3_bucket.photoalbum-images.id
       REKO_LAMBDA = aws_lambda_function.reko.id
     }
@@ -96,6 +95,7 @@ resource "aws_lambda_function" "remover" {
   environment {
     variables = {
       THUMB_BUCKET = aws_s3_bucket.photoalbum-thumbs.id
+      LARGE_THUMBS_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
       TABLE = aws_dynamodb_table.photoalbumv2-tags-db.id
     }
   }
@@ -154,6 +154,7 @@ module "singleImageAPI" {
   handler       = "singleimage.handler"
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
+    LARGE_THUMBS_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
     API_KEY = var.API_KEY
     TABLE = aws_dynamodb_table.photoalbumv2-tags-db.name
   }

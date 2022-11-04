@@ -22,19 +22,17 @@ resource "aws_s3_bucket" "photoalbum-thumbs" {
   bucket = "${var.bucket_prefix}-thumbs-${terraform.workspace}"
 }
 
-# resource "aws_s3_bucket_cors_configuration" "photoalbum-thumbs-cors" {
-#   bucket = aws_s3_bucket.photoalbum-thumbs.id
-
-#   cors_rule {
-
-#   allowed_headers = ["*"]
-#   allowed_methods = ["PUT", "POST", "DELETE", "HEAD", "GET"]
-#   allowed_origins = ["*"]
-#   expose_headers  = ["ETag"]
-#   }
-# }
 output "thumbBucket" {
   value = aws_s3_bucket.photoalbum-thumbs.id
+}
+
+//bucket for the larger (high res) thumbnails
+resource "aws_s3_bucket" "photoalbum-large-thumbs" {
+  bucket = "${var.bucket_prefix}-large-thumbs-${terraform.workspace}"
+}
+
+output "largeThumbBucket" {
+  value = aws_s3_bucket.photoalbum-large-thumbs.id
 }
 
 //trigger resizer from s3
