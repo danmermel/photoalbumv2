@@ -1,3 +1,8 @@
+//bucket for the code (layer/code zips)
+resource "aws_s3_bucket" "photoalbum-code" {
+  bucket = "${var.bucket_prefix}-code-${terraform.workspace}"
+}
+
 //bucket for the photos
 resource "aws_s3_bucket" "photoalbum-images" {
   bucket = "${var.bucket_prefix}-images-${terraform.workspace}"

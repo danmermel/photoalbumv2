@@ -6,6 +6,7 @@ resource "aws_lambda_function" "lambda" {
   runtime = var.runtime
   timeout = var.timeout
   source_code_hash = filebase64sha256(var.filename)
+  layers = var.layers
   environment {
     variables = var.env_variables
   }

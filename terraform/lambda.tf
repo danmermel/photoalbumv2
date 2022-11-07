@@ -1,8 +1,9 @@
-//zip up all js files for the pipeline
+//zip up all js files for the API
 data "archive_file" "lambda" {
-  type        = "zip"
   source_dir  = "../lambda"
+  type     = "zip"
   output_path = "../lambda.zip"
+  excludes = [ "node_modules", "nodejs", "nodejs-stage.zip", "nodejs-prod.zip"]
 }
 
 // create the lambda functions
@@ -19,6 +20,7 @@ resource "aws_lambda_function" "reko" {
   runtime = "nodejs16.x"
   timeout = 10
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
 
   environment {
     variables = {
@@ -62,6 +64,7 @@ resource "aws_lambda_function" "resizer" {
   runtime = "nodejs16.x"
   timeout = 30
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   environment {
     variables = {
       THUMB_BUCKET = aws_s3_bucket.photoalbum-thumbs.id
@@ -90,7 +93,7 @@ resource "aws_lambda_function" "remover" {
   runtime = "nodejs16.x"
   timeout = 10
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
-
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
 
   environment {
     variables = {
@@ -117,6 +120,7 @@ module "listAlbumsAPI" {
   function_name = "listalbumsv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "listalbums.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
     API_KEY = var.API_KEY
@@ -134,6 +138,7 @@ module "singleAlbumAPI" {
   function_name = "singlealbumv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "singlealbum.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-thumbs.id
     API_KEY = var.API_KEY
@@ -151,6 +156,7 @@ module "singleImageAPI" {
   function_name = "singleimagev2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "singleimage.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
     LARGE_THUMBS_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
@@ -170,6 +176,7 @@ module "createAlbumAPI" {
   function_name = "createalbumv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "createalbum.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
     API_KEY = var.API_KEY
@@ -187,6 +194,7 @@ module "uploadAPI" {
   function_name = "uploadv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "upload.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
     API_KEY = var.API_KEY
@@ -204,6 +212,7 @@ module "deleteAPI" {
   function_name = "deletev2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "delete.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
     API_KEY = var.API_KEY
@@ -221,6 +230,7 @@ module "tagViewAPI" {
   function_name = "tagviewv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "tagview.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-thumbs.id
     API_KEY = var.API_KEY

@@ -21,3 +21,7 @@ variable "function_name" {
 variable "handler" {
 }
 
+variable "layers" {
+  default = []
+}
+
