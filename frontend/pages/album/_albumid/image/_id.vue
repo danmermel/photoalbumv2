@@ -4,7 +4,7 @@
       <v-img :src="viewurl" class="grey lighten-2"> </v-img>
     </v-row>
     <v-row>
-      <v-chip small v-for="tag in tags" :key="tag">{{ tag }}</v-chip>
+      <v-chip small v-for="tag in tags" :key="tag" :href="`/tag/${tag}`" nuxt>{{ tag }}</v-chip>
     </v-row>
     <v-row>
       <v-btn color="success" @click="download">Download</v-btn>

@@ -32,6 +32,26 @@ var readtags = async function (key) {
   return resp
 }
 
+var readkeys = async function (tag, ExclusiveStartKey) {
+  const obj = {
+    TableName: TABLE,
+    IndexName: "keyword-index",
+    KeyConditionExpression: "keyword = :k",
+    ExpressionAttributeValues: { ":k": { "S": tag } },
+    ProjectionExpression: "image_id",
+    Limit: 25
+  }
+  //if this param is supplied (for pagination of results) we pass it in.
+  if (ExclusiveStartKey) {
+    obj.ExclusiveStartKey = {"id":{"S":ExclusiveStartKey}}
+  }
+
+  let resp =  await dynamodb.query(obj).promise();
+  const keys = resp.Items.map(function (i){
+    return i.image_id.S
+  })
+  return {keys, LastEvaluatedKey: resp.LastEvaluatedKey} 
+}
 var remove = async function (items) {
 
   //this is the object  you have to build to insert into dynamodb
@@ -62,5 +82,5 @@ const write = async function(params) {
 }
 
 module.exports = {
-  read, readtags, remove, write
+  read, readtags, readkeys, remove, write
 };

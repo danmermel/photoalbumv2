@@ -144,7 +144,6 @@ output "singleAlbumAPIFunctionUrl" {
   value = module.singleAlbumAPI.FunctionUrl
 }
 
-
 // Single Image API
 module "singleImageAPI" {
   source        = "./modules/lambdaPackage"
@@ -215,6 +214,23 @@ output "deleteAPIFunctionUrl" {
   value = module.deleteAPI.FunctionUrl
 }
 
+// ag View API
+module "tagViewAPI" {
+  source        = "./modules/lambdaPackage"
+  filename      = data.archive_file.lambda.output_path
+  function_name = "tagviewv2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "tagview.handler"
+  env_variables = {
+    BUCKET = aws_s3_bucket.photoalbum-thumbs.id
+    API_KEY = var.API_KEY
+    TABLE = aws_dynamodb_table.photoalbumv2-tags-db.name
+  }
+}
+
+output "tagViewAPIFunctionUrl" {
+  value = module.tagViewAPI.FunctionUrl
+}
 
 // give s3 permission to execute lambda
 
