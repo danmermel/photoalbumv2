@@ -43,7 +43,7 @@ var readkeys = async function (tag, ExclusiveStartKey) {
   }
   //if this param is supplied (for pagination of results) we pass it in.
   if (ExclusiveStartKey) {
-    obj.ExclusiveStartKey = {"id":{"S":ExclusiveStartKey}}
+    obj.ExclusiveStartKey = ExclusiveStartKey
   }
 
   let resp =  await dynamodb.query(obj).promise();

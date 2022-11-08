@@ -24,8 +24,13 @@ exports.handler = async function (spec) {
   let retval = []
 
   try {
+    let unencoded
+    if(spec.queryStringParameters.LastEvaluatedKey){
+      //it will be base64 encoded, so have to unencode it before using
+      unencoded = JSON.parse(Buffer.from(spec.queryStringParameters.LastEvaluatedKey,"base64").toString())
+    }
 
-    response = await db.readkeys(tag, spec.queryStringParameters.LastEvaluatedKey)
+    response = await db.readkeys(tag, unencoded)
     const keys =  response.keys
 
     for (var i = 0; i < keys.length; i++) {
@@ -44,6 +49,8 @@ exports.handler = async function (spec) {
     return { statusCode: 500, body: '{"ok": false}' }
 
   }
-  return { statusCode: 200, body: JSON.stringify({ "ok": true, images: retval, LastEvaluatedKey: response.LastEvaluatedKey.id.S }) }
+  //base 64 encode the lastevaluatedkey for ease of passing around
+  const encoded = Buffer.from (JSON.stringify(response.LastEvaluatedKey)).toString("base64")
+  return { statusCode: 200, body: JSON.stringify({ "ok": true, images: retval, LastEvaluatedKey: encoded }) }
 
 }

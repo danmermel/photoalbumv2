@@ -8,7 +8,7 @@
         lg="2"
         md="3"
         cols="6"
-      > <NuxtLink :to="`/album/${album}/image/${n.filename}`">
+      > <NuxtLink :to="`/album/${n.album}/image/${n.filename}`">
         <v-img
           :src="n.url"
           aspect-ratio="1"
@@ -32,6 +32,7 @@ export default {
     return {
       images: [],
       tag: '',
+      LastEvaluatedKey:"",
       endReached: false
     };
   },
@@ -68,13 +69,14 @@ export default {
     const response = await $axios.$get(url);
     // store.commit('profile/saveAlbumImages', response.images)
     // store.commit('profile/saveAlbumEndReached', response.endReached)
-    return { images: response.images, tag };
+    return { images: response.images, tag, LastEvaluatedKey:response.LastEvaluatedKey };
   },
   computed: {
     computedImages: function () {
       return this.images.map(function (i) {
         //get the last string after the slash
         i.filename = i.key.match(/\/(.*$)/)[1]
+        i.album = i.key.match(/^(.*)\//)[1]
         return i
       })
     }
@@ -82,14 +84,13 @@ export default {
   methods: {
     loadMore: async function() {
       const profile = this.$store.state.profile.profile;
-      // the marker is used to get the next page of images. We pass it the last key we know about
-      const lastKey = this.images[this.images.length - 1].key
-      const url = `${config.singleAlbumAPIFunctionUrl.value}?apikey=${profile.apikey}&album=${this.album}&marker=${lastKey}`;
+      const url = `${config.tagViewAPIFunctionUrl.value}?apikey=${profile.apikey}&tag=${this.tag}&LastEvaluatedKey=${this.LastEvaluatedKey}`
       const response = await this.$axios.$get(url);
       this.images = this.images.concat(response.images)
-      this.endReached = response.endReached
-      this.$store.commit('profile/saveAlbumImages', this.images)
-      this.$store.commit('profile/saveAlbumEndReached', this.endReached)
+      //update the last evaluatedkey for loading more
+      this.LastEvaluatedKey = response.LastEvaluatedKey
+      // this.$store.commit('profile/saveAlbumImages', this.images)
+      // this.$store.commit('profile/saveAlbumEndReached', this.endReached)
     },
   }
 };
