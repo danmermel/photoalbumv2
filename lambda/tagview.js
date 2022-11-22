@@ -49,8 +49,13 @@ exports.handler = async function (spec) {
     return { statusCode: 500, body: '{"ok": false}' }
 
   }
-  //base 64 encode the lastevaluatedkey for ease of passing around
-  const encoded = Buffer.from (JSON.stringify(response.LastEvaluatedKey)).toString("base64")
+  //base 64 encode the lastevaluatedkey for ease of passing around, but only if it exists
+  //if it does not exist, then the end has been reached
+  let encoded
+  if(response.LastEvaluatedKey){
+    encoded = Buffer.from (JSON.stringify(response.LastEvaluatedKey)).toString("base64")
+
+  }
   return { statusCode: 200, body: JSON.stringify({ "ok": true, images: retval, LastEvaluatedKey: encoded }) }
 
 }

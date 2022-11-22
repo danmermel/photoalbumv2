@@ -1,6 +1,10 @@
 <template>
   <v-container>
     <v-row>
+      <v-col v-if="computedImages.length===0">
+        <h2>There are no images matching the tag {{ tag }}</h2>
+
+      </v-col>
       <v-col
         v-for="n in computedImages"
         :key="n.key"
@@ -17,7 +21,7 @@
         </v-img></NuxtLink>
       </v-col>
       <v-col>
-        <v-btn v-if="!endReached" @click="loadMore">Load More</v-btn>
+        <v-btn v-if="LastEvaluatedKey" @click="loadMore">Load More</v-btn>
       </v-col>
     </v-row>
     
@@ -32,7 +36,7 @@ export default {
     return {
       images: [],
       tag: '',
-      LastEvaluatedKey:"",
+      LastEvaluatedKey:null,
       endReached: false
     };
   },
@@ -47,28 +51,29 @@ export default {
 
 
     const tag = route.params.id
-    //store.commit('profile/saveMode', 'singlealbum')
+    store.commit('profile/saveMode', 'singlealbum')
 
-    // if this is the same album as we have in the cache, we needn't call a Lambda
-    // console.log("Current cache Album is ", profile.album)
-    // console.log("VIsiting album ", album)
-    // if (profile.album === album) {
-    //   console.log("Retrieving from cache")
-    //   return {
-    //     images: profile.albumImages,
-    //     album,
-    //     endReached: profile.endReached
-    //   }
-    // }
+    //if this is the same tag as we have in the cache, we needn't call a Lambda
+    console.log("Current cached tag is ", profile.album)
+    console.log("VIsiting tag ", tag)
+    if (profile.album === tag) {
+      console.log("Retrieving from cache")
+      return {
+        images: profile.albumImages,
+        tag,
+        LastEvaluatedKey: profile.lastEvaluatedKey
+      }
+    }
 
-    // store the current album in the store
-    // store.commit('profile/saveCurrentAlbum', album)
+    //store the current tag in the store
+    store.commit('profile/saveCurrentAlbum', tag)
 
     // fetch albums from the API
     const url = `${config.tagViewAPIFunctionUrl.value}?apikey=${profile.apikey}&tag=${tag}`;
     const response = await $axios.$get(url);
-    // store.commit('profile/saveAlbumImages', response.images)
-    // store.commit('profile/saveAlbumEndReached', response.endReached)
+    store.commit('profile/saveAlbumImages', response.images)
+    store.commit('profile/saveLastEvaluatedKey', response.LastEvaluatedKey)
+    console.log("lastevalkey is ", response.LastEvaluatedKey)
     return { images: response.images, tag, LastEvaluatedKey:response.LastEvaluatedKey };
   },
   computed: {
@@ -82,15 +87,18 @@ export default {
     }
   },
   methods: {
-    loadMore: async function() {
+    loadMore: async function() {  
       const profile = this.$store.state.profile.profile;
-      const url = `${config.tagViewAPIFunctionUrl.value}?apikey=${profile.apikey}&tag=${this.tag}&LastEvaluatedKey=${this.LastEvaluatedKey}`
+      const encodedKey = encodeURIComponent(this.LastEvaluatedKey)
+      const url = `${config.tagViewAPIFunctionUrl.value}?apikey=${profile.apikey}&tag=${this.tag}&LastEvaluatedKey=${encodedKey}`
+      console.log("url is ", url)
       const response = await this.$axios.$get(url);
       this.images = this.images.concat(response.images)
       //update the last evaluatedkey for loading more
       this.LastEvaluatedKey = response.LastEvaluatedKey
-      // this.$store.commit('profile/saveAlbumImages', this.images)
-      // this.$store.commit('profile/saveAlbumEndReached', this.endReached)
+      console.log("Now lastevalkey is ", this.LastEvaluatedKey)
+      this.$store.commit('profile/saveAlbumImages', this.images)
+      this.$store.commit('profile/saveLastEvaluatedKey', response.LastEvaluatedKey)
     },
   }
 };

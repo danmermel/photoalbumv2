@@ -1,4 +1,3 @@
-import Vue from "vue";
 import localstorage from "~/assets/js/localstorage";
 
 export const state = () => ({
@@ -28,6 +27,10 @@ export const mutations = {
   },
   saveMode(state, mode) {
     state.profile.mode = mode
+    localstorage.saveProfile(state.profile)
+  },
+  saveLastEvaluatedKey(state, lastEvaluatedKey) {
+    state.profile.lastEvaluatedKey = lastEvaluatedKey
     localstorage.saveProfile(state.profile)
   }
 }
