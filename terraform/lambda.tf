@@ -62,6 +62,7 @@ resource "aws_lambda_function" "resizer" {
   role          = aws_iam_role.lambda_role.arn
   handler       = "resizer.handler"
   runtime = "nodejs16.x"
+  memory_size = 1024
   timeout = 30
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
