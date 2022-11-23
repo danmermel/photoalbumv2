@@ -155,7 +155,7 @@ export default {
       // don't refresh immediately otherwise the thumbnails won't be built yet
       setTimeout(function() {
         self.$nuxt.refresh()
-      }, 8000)
+      }, 5000)
 
       // in the meantime, show the user a success alert
       let msg = "Upload complete! Building thumbnails.."

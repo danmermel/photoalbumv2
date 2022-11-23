@@ -10,6 +10,14 @@
       <v-btn color="success" @click="download">Download</v-btn>
       <v-btn color="error" @click="deleteImage">Delete</v-btn>
     </v-row>
+    <ConfirmDialog
+      :displayDialog="displayDeleteDialog"
+      title="Are you sure?"
+      text="Confirm deletion of this image?"
+      verb="Delete"
+      @confirm="doDelete"
+      @cancel="cancelDelete"
+    />
   </v-container>
 </template>
 
@@ -29,6 +37,7 @@ export default {
       tags: [],
       encodedkey: "",
       albumid: "",
+      displayDeleteDialog: false
     };
   },
   async asyncData({ redirect, store, $axios, route }) {
@@ -56,7 +65,11 @@ export default {
     download: function () {
       window.location.href = this.downloadurl;
     },
-    deleteImage: async function () {
+    deleteImage: function () {
+      this.displayDeleteDialog = true
+    },
+    doDelete: async function() {
+      this.displayDeleteDialog = false
       const profile = this.$store.state.profile.profile;
       const url = `${config.deleteAPIFunctionUrl.value}?apikey=${profile.apikey}&key=${this.encodedkey}`;
       const response = await this.$axios.$get(url);
@@ -75,6 +88,9 @@ export default {
       }, 3000);
 
     },
+    cancelDelete: function() {
+      this.displayDeleteDialog = false
+    }
   },
 };
 </script>
