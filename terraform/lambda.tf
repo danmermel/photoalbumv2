@@ -188,6 +188,24 @@ output "createAlbumAPIFunctionUrl" {
   value = module.createAlbumAPI.FunctionUrl
 }
 
+// Delete Album API
+module "deleteAlbumAPI" {
+  source        = "./modules/lambdaPackage"
+  filename      = data.archive_file.lambda.output_path
+  function_name = "deletealbumv2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "deletealbum.handler"
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
+  env_variables = {
+    BUCKET = aws_s3_bucket.photoalbum-images.id
+    API_KEY = var.API_KEY
+  }
+}
+
+output "deleteAlbumAPIFunctionUrl" {
+  value = module.deleteAlbumAPI.FunctionUrl
+}
+
 // Upload image API
 module "uploadAPI" {
   source        = "./modules/lambdaPackage"

@@ -16,6 +16,7 @@
     </v-row>
     <v-row v-if="!uploadPhotos">
       <v-btn @click="uploadPhotos=true">Upload</v-btn>
+      <v-btn v-if="computedImages.length === 0" color="warning" @click="deleteAlbum">Delete Album</v-btn>
     </v-row>
     <v-row>
       <v-col
@@ -37,7 +38,14 @@
         <v-btn v-if="!endReached" @click="loadMore">Load More</v-btn>
       </v-col>
     </v-row>
-    
+    <ConfirmDialog
+      :displayDialog="displayDeleteDialog"
+      title="Are you sure?"
+      text="Confirm deletion of this album?"
+      verb="Delete"
+      @confirm="doDelete"
+      @cancel="cancelDelete"
+    />
   </v-container>
 
 </template>
@@ -54,7 +62,8 @@ export default {
       files: [],
       images: [],
       album: '',
-      endReached: false
+      endReached: false,
+      displayDeleteDialog: false
     };
   },
   async asyncData({ redirect, store, $axios, route }) {
@@ -168,6 +177,30 @@ export default {
         alertMessage: msg,
         alertType
       });
+    },
+    deleteAlbum: function () {
+      this.displayDeleteDialog = true
+    }, 
+    doDelete: async function() {
+      this.displayDeleteDialog = false
+      const profile = this.$store.state.profile.profile;
+      const url = `${config.deleteAlbumAPIFunctionUrl.value}?apikey=${profile.apikey}&album=${this.album}`;
+      try {
+        const response = await this.$axios.$get(url);
+        this.$store.commit("alert/insertAlert", {
+          alertMessage: "Album Deleted! Redirecting..",
+          alertType:"success"
+        });
+        this.$router.push(`/albums`);
+      } catch (e) {
+        const j = e.response.data
+        this.$store.commit("alert/insertAlert", {
+          alertMessage: `Could not delete Album. ${j.msg}`,
+        });
+      }
+    },
+    cancelDelete: function() {
+      this.displayDeleteDialog = false
     }
   }
 };
