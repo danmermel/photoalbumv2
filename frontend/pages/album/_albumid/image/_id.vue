@@ -1,14 +1,24 @@
 <template>
   <v-container>
     <v-row>
-      <v-img :src="viewurl" class="grey lighten-2"> </v-img>
-    </v-row>
-    <v-row>
-      <v-chip small v-for="tag in tags" :key="tag" :href="`/tag/${tag}`" nuxt>{{ tag }}</v-chip>
-    </v-row>
-    <v-row>
-      <v-btn color="success" @click="download">Download</v-btn>
-      <v-btn color="error" @click="deleteImage">Delete</v-btn>
+      <v-col cols="1" sm="2">
+        <v-btn v-if="leftKey" class="mx-2" fab dark small color="primary" @click="clickLeft">
+          <v-icon dark> mdi-arrow-left </v-icon>
+        </v-btn>
+      </v-col>
+      <v-col cols="10" sm="8">
+        <v-img :src="viewurl" class="grey lighten-2"> </v-img>
+        <v-chip small v-for="tag in tags" :key="tag" :href="`/tag/${tag}`" nuxt>{{
+        tag
+      }}</v-chip>
+        <v-btn color="success" @click="download">Download</v-btn>
+        <v-btn color="error" @click="deleteImage">Delete</v-btn>
+      </v-col>
+      <v-col cols="1" sm="2">
+        <v-btn v-if="rightKey" class="mx-2" fab dark small color="primary" @click="clickRight">
+          <v-icon dark> mdi-arrow-right </v-icon>
+        </v-btn>
+      </v-col>
     </v-row>
     <ConfirmDialog
       :displayDialog="displayDeleteDialog"
@@ -37,11 +47,14 @@ export default {
       tags: [],
       encodedkey: "",
       albumid: "",
-      displayDeleteDialog: false
+      displayDeleteDialog: false,
+      leftKey:"",
+      rightKey:""
+
     };
   },
   async asyncData({ redirect, store, $axios, route }) {
-    // load recent article list from local storage (profile)
+    // load recent photo list from local storage (profile)
     const profile = store.state.profile.profile;
     if (!profile) {
       //not logged in so bounce to home page
@@ -59,6 +72,22 @@ export default {
     const response = await $axios.$get(url);
     response.encodedkey = encodedkey;
     response.albumid = route.params.albumid;
+
+    //calculate the next and previous images
+    const imageList = profile.albumImages
+    // console.log(JSON.stringify(imageList))
+    //iterate through array and find the index of the current image
+    for (var i =0; i< imageList.length; i++) {
+      if (key === imageList[i].key) {
+        //found the index
+        console.log("found index at ", i, typeof i)
+        response.leftKey = i>0 ? imageList[i-1].key : ""
+        response.rightKey = i<imageList.length-1 ? imageList[i+1].key : ""
+        console.log(imageList[i], imageList[i+1])
+        break
+      }
+    }
+
     return response;
   },
   methods: {
@@ -66,10 +95,10 @@ export default {
       window.location.href = this.downloadurl;
     },
     deleteImage: function () {
-      this.displayDeleteDialog = true
+      this.displayDeleteDialog = true;
     },
-    doDelete: async function() {
-      this.displayDeleteDialog = false
+    doDelete: async function () {
+      this.displayDeleteDialog = false;
       const profile = this.$store.state.profile.profile;
       const url = `${config.deleteAPIFunctionUrl.value}?apikey=${profile.apikey}&key=${this.encodedkey}`;
       const response = await this.$axios.$get(url);
@@ -86,11 +115,20 @@ export default {
       setTimeout(function () {
         self.$router.push(`/album/${self.albumid}`);
       }, 3000);
-
     },
-    cancelDelete: function() {
-      this.displayDeleteDialog = false
-    }
+    cancelDelete: function () {
+      this.displayDeleteDialog = false;
+    },
+    clickLeft: function () {
+      console.log(this.leftKey)
+      var url = "/album/" + this.leftKey.replace("/", "/image/")
+      this.$router.push(url)
+    },
+    clickRight: function () {
+      console.log(this.rightKey)
+      var url = "/album/" + this.rightKey.replace("/", "/image/")
+      this.$router.push(url)
+    },
   },
 };
 </script>
