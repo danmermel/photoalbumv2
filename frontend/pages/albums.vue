@@ -1,6 +1,16 @@
 <template>
   <div>
-    <v-list>
+    <v-container>
+      <v-layout row wrap>
+        <v-flex xs6 md3 mb-1 px-1 v-for="album in albums" :key="album" >
+          <v-card color="blue darken-1" height="100px" :href="`/album/${album}`" nuxt>
+            <v-card-title class="justify-center">{{ album }}</v-card-title>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <!--<v-list>
       <v-list-item
         :href="`/album/${album}`"
         nuxt
@@ -11,7 +21,7 @@
           <v-list-item-title>{{ album }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-    </v-list>
+    </v-list> -->
 
     <v-text-field
       v-model="newAlbumName"
