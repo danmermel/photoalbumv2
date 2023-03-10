@@ -1,23 +1,32 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="1" sm="2">
+      <v-col cols="4" sm="4" class="tal">
         <v-btn v-if="leftKey" class="mx-2" fab dark small color="primary" @click="clickLeft">
           <v-icon dark> mdi-arrow-left </v-icon>
         </v-btn>
       </v-col>
-      <v-col cols="10" sm="8">
-        <v-img :src="viewurl" class="grey lighten-2"> </v-img>
-        <v-chip small v-for="tag in tags" :key="tag" :href="`/tag/${tag}`" nuxt>{{
-        tag
-      }}</v-chip>
-        <v-btn color="success" @click="download">Download</v-btn>
-        <v-btn color="error" @click="deleteImage">Delete</v-btn>
-      </v-col>
-      <v-col cols="1" sm="2">
+      <v-col cols="4"></v-col>
+      <v-col cols="4" sm="4" class="tar">
         <v-btn v-if="rightKey" class="mx-2" fab dark small color="primary" @click="clickRight">
           <v-icon dark> mdi-arrow-right </v-icon>
         </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" sm="12">
+        <v-row>
+          <v-img :src="viewurl" class="grey lighten-2"> </v-img>
+        </v-row>
+        <v-row>
+          <v-chip small v-for="tag in tags" :key="tag" :href="`/tag/${tag}`" nuxt>{{tag}}</v-chip>
+        </v-row>
+        <v-row>
+          <v-btn color="success" @click="download">Download</v-btn>
+        </v-row>
+        <v-row>
+          <v-btn color="error" @click="deleteImage">Delete</v-btn>
+        </v-row>
       </v-col>
     </v-row>
     <ConfirmDialog
@@ -34,6 +43,15 @@
 <style>
 .v-chip {
   margin: 3px;
+}
+.row {
+  margin-bottom:10px
+}
+.tal {
+  text-align: left;
+}
+.tar {
+  text-align: right;
 }
 </style>
 
