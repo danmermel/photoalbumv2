@@ -1,6 +1,13 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+
+  // creates a 404.html to handle URLs that don't exist e.g. /choir/<choirId>
+  generate: {
+    fallback: true
+  },
+
+
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
 
