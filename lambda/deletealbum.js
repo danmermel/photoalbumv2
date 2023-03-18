@@ -35,7 +35,7 @@ exports.handler = async function (spec) {
   } catch (e) {
     //console.log("e is ", e)
     //do nothing
-    console.log("Bucket does not exist.. do nothing...")
+    //console.log("Bucket does not exist.. do nothing...")
     return { statusCode: 404, body: '{"ok": false,"msg": "Album does not exist"}' }
   }
 }

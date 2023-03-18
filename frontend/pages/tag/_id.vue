@@ -54,10 +54,10 @@ export default {
     store.commit('profile/saveMode', 'singlealbum')
 
     //if this is the same tag as we have in the cache, we needn't call a Lambda
-    console.log("Current cached tag is ", profile.album)
-    console.log("VIsiting tag ", tag)
+    // console.log("Current cached tag is ", profile.album)
+    // console.log("VIsiting tag ", tag)
     if (profile.album === tag) {
-      console.log("Retrieving from cache")
+      //console.log("Retrieving from cache")
       return {
         images: profile.albumImages,
         tag,
@@ -73,7 +73,7 @@ export default {
     const response = await $axios.$get(url);
     store.commit('profile/saveAlbumImages', response.images)
     store.commit('profile/saveLastEvaluatedKey', response.LastEvaluatedKey)
-    console.log("lastevalkey is ", response.LastEvaluatedKey)
+    // console.log("lastevalkey is ", response.LastEvaluatedKey)
     return { images: response.images, tag, LastEvaluatedKey:response.LastEvaluatedKey };
   },
   computed: {
@@ -91,12 +91,12 @@ export default {
       const profile = this.$store.state.profile.profile;
       const encodedKey = encodeURIComponent(this.LastEvaluatedKey)
       const url = `${config.tagViewAPIFunctionUrl.value}?apikey=${profile.apikey}&tag=${this.tag}&LastEvaluatedKey=${encodedKey}`
-      console.log("url is ", url)
+      //console.log("url is ", url)
       const response = await this.$axios.$get(url);
       this.images = this.images.concat(response.images)
       //update the last evaluatedkey for loading more
       this.LastEvaluatedKey = response.LastEvaluatedKey
-      console.log("Now lastevalkey is ", this.LastEvaluatedKey)
+      //console.log("Now lastevalkey is ", this.LastEvaluatedKey)
       this.$store.commit('profile/saveAlbumImages', this.images)
       this.$store.commit('profile/saveLastEvaluatedKey', response.LastEvaluatedKey)
     },

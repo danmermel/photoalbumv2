@@ -80,10 +80,10 @@ export default {
     store.commit('profile/saveMode', 'singlealbum')
 
     // if this is the same album as we have in the cache, we needn't call a Lambda
-    console.log("Current cache Album is ", profile.album)
-    console.log("VIsiting album ", album)
+    // console.log("Current cache Album is ", profile.album)
+    // console.log("VIsiting album ", album)
     if (profile.album === album) {
-      console.log("Retrieving from cache")
+      //console.log("Retrieving from cache")
       return {
         images: profile.albumImages,
         album,
@@ -129,9 +129,9 @@ export default {
       const files = this.files
       const profile = this.$store.state.profile.profile;
       for(let file of files) {
-        console.log('Uploading',file.name)
-        console.log('file', file)
-        console.log('typeof file', typeof file)
+        // console.log('Uploading',file.name)
+        // console.log('file', file)
+        // console.log('typeof file', typeof file)
         let response
 
         try {
@@ -148,7 +148,7 @@ export default {
             headers: headers,
           });
         } catch (e) {
-          console.log('error', e)
+          // console.log('error', e)
           this.failures.push(file.name)
         }
         this.progress++

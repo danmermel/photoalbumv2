@@ -79,7 +79,7 @@ export default {
       redirect("/");
       return;
     }
-    console.log(route.params);
+    //console.log(route.params);
     const key = `${route.params.albumid}/${route.params.id}`;
     const encodedkey = encodeURIComponent(key);
 
@@ -98,10 +98,10 @@ export default {
     for (var i =0; i< imageList.length; i++) {
       if (key === imageList[i].key) {
         //found the index
-        console.log("found index at ", i, typeof i)
+        //console.log("found index at ", i, typeof i)
         response.leftKey = i>0 ? imageList[i-1].key : ""
         response.rightKey = i<imageList.length-1 ? imageList[i+1].key : ""
-        console.log(imageList[i], imageList[i+1])
+        //console.log(imageList[i], imageList[i+1])
         break
       }
     }
@@ -138,12 +138,12 @@ export default {
       this.displayDeleteDialog = false;
     },
     clickLeft: function () {
-      console.log(this.leftKey)
+      //console.log(this.leftKey)
       var url = "/album/" + this.leftKey.replace("/", "/image/")
       this.$router.push(url)
     },
     clickRight: function () {
-      console.log(this.rightKey)
+      //console.log(this.rightKey)
       var url = "/album/" + this.rightKey.replace("/", "/image/")
       this.$router.push(url)
     },

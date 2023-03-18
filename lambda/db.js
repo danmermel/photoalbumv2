@@ -72,7 +72,7 @@ var remove = async function (items) {
     }
     params.RequestItems[TABLE].push(obj)
   }
-  console.log(params);
+  //console.log(params);
   
   await dynamodb.batchWriteItem(params).promise();
 }

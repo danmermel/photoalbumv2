@@ -35,14 +35,14 @@ exports.handler = async function (spec) {
   } catch (e) {
     //console.log("e is ", e)
     //do nothing
-    console.log("Bucket does not exist.. creating...")
+    //console.log("Bucket does not exist.. creating...")
   }
   // if you get here, create the bucket
   try {
     await s3.putObject(params).promise()
     return { statusCode: 200, body: '{"ok": true,"msg": "Album created"}' }
   } catch (e) {
-    console.log("Error creating album: ", e)
+    //console.log("Error creating album: ", e)
     return { statusCode: 500, body: '{"ok": false,"msg": "Error creating album:"}' }
   }
 
