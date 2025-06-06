@@ -8,3 +8,8 @@ variable "API_KEY" {
   type        = string
   sensitive   = true
 }
+
+variable "node_version" {
+  type = string
+  default = "nodejs22.x"
+}

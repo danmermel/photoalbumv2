@@ -19,5 +19,5 @@ resource "aws_lambda_layer_version" "nodeModulesLambdaLayer" {
   s3_bucket           = aws_s3_bucket.photoalbum-code.id
   s3_key              = aws_s3_object.nodeModulesS3Zip.id
   source_code_hash    = data.archive_file.nodeModulesZip.output_base64sha256
-  compatible_runtimes = ["nodejs16.x"]
+  compatible_runtimes = [var.node_version]
 }

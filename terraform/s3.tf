@@ -86,7 +86,24 @@ resource "aws_s3_bucket_policy" "photosWebsitePolicy" {
 EOF
 }
 
+resource "aws_s3_bucket_ownership_controls" "photosWebsiteControls" {
+  bucket = aws_s3_bucket.photosWebsite.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+resource "aws_s3_bucket_public_access_block" "photosWebsiteAccess" {
+  bucket = aws_s3_bucket.photosWebsite.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 resource "aws_s3_bucket_acl" "photosWebsiteACL" {
+  depends_on = [ aws_s3_bucket_public_access_block.photosWebsiteAccess, 
+                aws_s3_bucket_ownership_controls.photosWebsiteControls ]
   bucket = aws_s3_bucket.photosWebsite.bucket
   acl    = "public-read"
 }

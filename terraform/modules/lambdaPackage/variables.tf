@@ -1,7 +1,6 @@
 variable "filename" {}
 
 variable "runtime" {
-  default = "nodejs16.x"
 }
 
 variable "timeout" {
