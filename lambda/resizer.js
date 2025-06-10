@@ -98,6 +98,15 @@ exports.handler = async function (event) {
         ContentType: 'image/jpg',
         Key: key,
       }).promise()
+
+      console.log('writing placeholder to S3')
+      await s3.putObject({
+          Body: file,
+          Bucket: LARGE_THUMB_BUCKET,
+          ACL: "private",
+          ContentType: 'image/jpg',
+          Key: key,
+        }).promise()
     }
   }
 }
