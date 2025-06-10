@@ -125,7 +125,7 @@ module "listAlbumsAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
   }
 }
 
@@ -144,7 +144,7 @@ module "singleAlbumAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-thumbs.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
   }
 }
 
@@ -164,7 +164,7 @@ module "singleImageAPI" {
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
     LARGE_THUMBS_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
     TABLE = aws_dynamodb_table.photoalbumv2-tags-db.name
   }
 }
@@ -184,7 +184,7 @@ module "createAlbumAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
   }
 }
 
@@ -203,7 +203,7 @@ module "deleteAlbumAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
   }
 }
 
@@ -222,7 +222,7 @@ module "uploadAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
   }
 }
 
@@ -241,7 +241,7 @@ module "deleteAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-images.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
   }
 }
 
@@ -260,7 +260,7 @@ module "tagViewAPI" {
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
   env_variables = {
     BUCKET = aws_s3_bucket.photoalbum-thumbs.id
-    API_KEY = var.API_KEY
+    API_KEY = random_string.apiKey.result
     TABLE = aws_dynamodb_table.photoalbumv2-tags-db.name
   }
 }

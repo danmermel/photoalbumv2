@@ -37,6 +37,15 @@ terraform {
   }
 }
 
+resource "random_string" "apiKey" {
+  length  = 16
+  special = false
+}
+
 output "awsRegion"  {
   value = data.aws_region.current.name
+}
+
+output "apiKey"  {
+  value = random_string.apiKey.result
 }
