@@ -11,24 +11,25 @@ const newAlbumName = ref('')
 const buttonDisable = ref(false)
 
 // store.commit("profile/saveMode", "albumlist");
-const response = await useFetch(runtimeConfig.public.listAlbumsAPIFunctionUrl.value + "?apikey=" + auth.value.apiKey);
-console.log(response.data.value)
-albums.value = response.data.value.albums
+const response = await $fetch(runtimeConfig.public.listAlbumsAPIFunctionUrl.value + "?apikey=" + auth.value.apiKey);
+console.log(response)
+albums.value = response.albums
 
 //create albums function
 
 async function createAlbum () {
   buttonDisable.value = true
   //try to create an album
-  const response = await useFetch(runtimeConfig.public.createAlbumAPIFunctionUrl.value + "?apikey=" + auth.value.apiKey + "&album=" + newAlbumName.value );
-  buttonDisable.value = false
-  if (response.data.value && response.data.value.ok) {
+  try {
+    const response = await $fetch(runtimeConfig.public.createAlbumAPIFunctionUrl.value + "?apikey=" + auth.value.apiKey + "&album=" + newAlbumName.value );
+    buttonDisable.value = false
     alert.value.ts = new Date().getTime();
     alert.value.message = "Album added";
     await navigateTo(`/album/${newAlbumName.value}`)
-  } else {
+  } catch {
     alert.value.ts = new Date().getTime();
     alert.value.message = "Failed to add Album: ";
+    buttonDisable.value = false
   }
 
 }
