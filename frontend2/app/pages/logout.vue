@@ -1,7 +1,7 @@
 <script setup>
   // composables
-  const auth = useAuth()
-  auth.value.authenticated = false
-  localStorage.removeItem("albumapikey")
-  await navigateTo('/login')
+  const { logout } = useAuth()
+
+  // log out
+  await logout()
 </script>
