@@ -1,13 +1,9 @@
 
 <script setup>
 // composables
-const auth = useAuth();
-//   const route = useRoute()
 
 // local page items
 const drawer = ref(false);
-
-const runtimeConfig = useRuntimeConfig()
 
 </script>
 <template>
@@ -18,17 +14,6 @@ const runtimeConfig = useRuntimeConfig()
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       </template>
       <v-app-bar-title @click="navigateTo('/')">Photo Album</v-app-bar-title>
-      <!-- <template v-slot:append>
-        <v-badge
-          color="red"
-          :content="auth.offlineTreesCount"
-        >
-          <v-btn density="compact" icon="mdi-cloud-off-outline" v-if="auth.offline"></v-btn>
-          <v-btn density="compact" icon="mdi-cloud-outline" v-if="!auth.offline" @click="navigateTo('/upload')"></v-btn>
-        </v-badge>
-        <v-btn icon="mdi-plus" @click="navigateTo('/add')"></v-btn>
-        <v-btn v-if="route.name !== 'index'" icon="mdi-chevron-left" @click="navigateTo('/')"></v-btn>
-      </template> -->
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" location="left">
       <v-list>
