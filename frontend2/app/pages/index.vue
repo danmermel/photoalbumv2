@@ -20,7 +20,10 @@ async function createNewAlbum() {
 </script>
 
 <template>
-  <div>
+  <v-list>
+    <v-list-item v-for="album in sortedAlbumList" :key="album" :to="`/album/${album}`">{{ album}} </v-list-item> 
+  </v-list>
+  <!-- <div>
     <v-container>
       <v-layout row wrap>
         <v-flex xs6 md3 mb-1 px-1 v-for="album in sortedAlbumList" :key="album">
@@ -34,12 +37,11 @@ async function createNewAlbum() {
           </v-card>
         </v-flex>
       </v-layout>
-    </v-container>
+    </v-container> -->
     <v-text-field
       v-model="newAlbumName"
       label="New Album name"
       required
     ></v-text-field>
     <v-btn :disabled="buttonDisable" @click="createNewAlbum">Create</v-btn>
-  </div>
 </template>

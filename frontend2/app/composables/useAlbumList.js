@@ -1,5 +1,3 @@
-import useShowAlert from "./useShowAlert"
-
 export default function () {
   const albumList = useState('albumList', () => { return [] })
   const runtimeConfig = useRuntimeConfig()
@@ -22,7 +20,7 @@ export default function () {
       await $fetch(runtimeConfig.public.createAlbumAPIFunctionUrl.value + "?apikey=" + auth.value.apiKey + "&album=" + newAlbumName );
       albumList.value.push(newAlbumName)  //add to the existing list of albums
       showAlert("New Album created")
-      //await navigateTo(`/album/${newAlbumName}`)
+      await navigateTo(`/album/${newAlbumName}`)
       console.log(albumList.value)
     } catch {
       showAlert("Failed to create new Album", "error")
