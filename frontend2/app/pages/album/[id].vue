@@ -64,9 +64,11 @@ async function onFileChange() {
     await loadImages(id)
     transforming.value = false
     if (failures.value.length === 0) {
+      console.log("no errors")
       showAlert('Images uploaded successfully')
     } else {
-      showAlert(`Images uploaded but with errors: ${failures.value}`, "warning")
+      console.log("have errors")
+      showAlert(`Images uploaded but with errors: ${failures.value}`, "warning", true)
     }
   }, 5000)
 }
