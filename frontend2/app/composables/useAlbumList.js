@@ -32,5 +32,30 @@ export default function () {
     return albumList.value.sort()
   })
   //delete an album
-  return { albumList, loadAlbumList, createAlbum, sortedAlbumList }
+
+  async function deleteAlbum(id) {
+  try {
+    const paramsObj = {
+      apikey: auth.value.apiKey,
+      album: id //from the route
+    };
+    const searchParams = new URLSearchParams(paramsObj);
+    const response = await $fetch(runtimeConfig.public.deleteAlbumAPIFunctionUrl.value + "?" + searchParams.toString());
+    //console.log("response is ", response)
+    // now remove from albumList
+    const i = albumList.value.indexOf(id)
+    if (i > -1) {
+      //found it. Remove it 
+      albumList.value.splice(i, 1)
+    }
+    console.log("calling show alert")
+    showAlert("Album Deleted successfully")
+    await navigateTo('/')
+  } catch (e) {
+    console.error(e)
+  }
+
+
+}
+  return { albumList, loadAlbumList, createAlbum, deleteAlbum, sortedAlbumList }
 }

@@ -1,6 +1,8 @@
 <script setup>
 
 const { loadImages, imageList, endReached } = useAlbum()
+const { deleteAlbum } = useAlbumList()
+
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const { auth } = useAuth()
@@ -13,6 +15,7 @@ const files = ref([])
 const uploadPhotos = ref(false)
 const failures = ref([])
 const transforming = ref(false)
+const displayDialog = ref(false)
 
 await loadImages(id)
 
@@ -71,36 +74,21 @@ async function onFileChange() {
       showAlert(`Images uploaded but with errors: ${failures.value}`, "warning", true)
     }
   }, 5000)
+
 }
 
-//     doDelete: async function() {
-//       this.displayDeleteDialog = false
-//       const profile = this.$store.state.profile.profile;
-//       const url = `${config.deleteAlbumAPIFunctionUrl.value}?apikey=${profile.apikey}&album=${this.album}`;
-//       try {
-//         const response = await this.$axios.$get(url);
-//         this.$store.commit("alert/insertAlert", {
-//           alertMessage: "Album Deleted! Redirecting..",
-//           alertType:"success"
-//         });
-//         this.$router.push(`/albums`);
-//       } catch (e) {
-//         const j = e.response.data
-//         this.$store.commit("alert/insertAlert", {
-//           alertMessage: `Could not delete Album. ${j.msg}`,
-//         });
-//       }
-//     },
-//     cancelDelete: function() {
-//       this.displayDeleteDialog = false
-//     }
-//   }
-// };
+async function doDelete () {
+  displayDialog.value=false
+  await deleteAlbum(id)
+}
+
+
 
 </script>
 
 
 <template>
+  <ConfirmDialog title="Are you sure you want to delete this album?" :text="id" verb="Delete" :displayDialog="displayDialog" @cancel="displayDialog=false" @confirm="doDelete"></ConfirmDialog>
   <v-row v-if="uploading">
     <v-progress-linear :value="100 * progress / files.length"></v-progress-linear>
     <div>
@@ -118,7 +106,7 @@ async function onFileChange() {
   </v-row>
   <v-row v-if="!uploadPhotos">
     <v-btn @click="uploadPhotos = true">Upload</v-btn>
-    <!-- <v-btn v-if="computedImages.length === 0" color="warning" @click="deleteAlbum">Delete Album</v-btn> -->
+    <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog=true">Delete Album</v-btn>
   </v-row>
   <v-row>
     <v-col v-for="n in imageList" :key="n.key" class="d-flex child-flex" cols="3">
