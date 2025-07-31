@@ -1,9 +1,37 @@
 <script setup>
 const { image, loadImage } = useSingleImage()
+const { imageList } = useAlbum()
+const route = useRoute()
+
 const albumId = route.params.albumid
 const imageId = route.params.id
 
+const leftUrl = ref('')
+const rightUrl = ref ('')
+
+// const runtimeConfig = useRuntimeConfig()
+// const { auth } = useAuth()
+// const { showAlert } = useShowAlert()
+
+
 await loadImage(albumId, imageId)
+
+const key = `${albumId}/${imageId}`;
+
+//calculate the next and previous images
+// console.log(JSON.stringify(imageList))
+//iterate through array and find the index of the current image
+for (var i = 0; i < imageList.value.length; i++) {
+  if (key === imageList.value[i].key) {
+    //found the index
+    //console.log("found index at ", i, typeof i)
+    const leftImageId = i > 0 ? imageList.value[i - 1].key.split("/")[1] : ""
+    const rightImageId = i < imageList.value.length - 1 ? imageList.value[i + 1].key.split("/")[1] : ""
+    leftUrl.value = leftImageId.length > 0 ? `/album/${albumId}/image/${leftImageId}` : ""
+    rightUrl.value = rightImageId.length > 0 ? `/album/${albumId}/image/${rightImageId}` : ""    
+    break
+  }
+}
 
 // const config = require("../../../../config.json");
 // export default {
@@ -40,20 +68,7 @@ await loadImage(albumId, imageId)
 //     response.encodedkey = encodedkey;
 //     response.albumid = route.params.albumid;
 
-//     //calculate the next and previous images
-//     const imageList = profile.albumImages
-//     // console.log(JSON.stringify(imageList))
-//     //iterate through array and find the index of the current image
-//     for (var i =0; i< imageList.length; i++) {
-//       if (key === imageList[i].key) {
-//         //found the index
-//         //console.log("found index at ", i, typeof i)
-//         response.leftKey = i>0 ? imageList[i-1].key : ""
-//         response.rightKey = i<imageList.length-1 ? imageList[i+1].key : ""
-//         //console.log(imageList[i], imageList[i+1])
-//         break
-//       }
-//     }
+
 
 //     return response;
 //   },
@@ -101,6 +116,22 @@ await loadImage(albumId, imageId)
 </script>
 
 <template>
+  {{ leftKey }}
+  {{ rightKey }}
+
+  <v-card>
+    <v-img :src="image.viewurl" min-height="200px" min-width="200px" cover></v-img>
+
+    <v-card-actions>
+      <v-spacer></v-spacer>
+
+      <v-btn v-if="leftUrl" color="medium-emphasis" icon="mdi-arrow-left" size="small" :to="leftUrl"></v-btn>
+
+      <v-btn v-if="rightUrl" color="medium-emphasis" icon="mdi-arrow-right" size="small" :to="rightUrl"></v-btn>
+
+      <v-btn color="medium-emphasis" icon="mdi-share-variant" size="small"></v-btn>
+    </v-card-actions>
+  </v-card>
   <!-- <v-container>
     <v-row>
       <v-col cols="4" sm="4" class="tal">
@@ -141,4 +172,3 @@ await loadImage(albumId, imageId)
     />
   </v-container> -->
 </template>
-
