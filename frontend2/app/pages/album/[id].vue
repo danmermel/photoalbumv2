@@ -77,18 +77,15 @@ async function onFileChange() {
 
 }
 
-async function doDelete () {
-  displayDialog.value=false
+async function doDelete() {
+  displayDialog.value = false
   await deleteAlbum(id)
 }
-
-
-
 </script>
 
-
 <template>
-  <ConfirmDialog title="Are you sure you want to delete this album?" :text="id" verb="Delete" :displayDialog="displayDialog" @cancel="displayDialog=false" @confirm="doDelete"></ConfirmDialog>
+  <ConfirmDialog title="Are you sure you want to delete this album?" :text="id" verb="Delete"
+    :displayDialog="displayDialog" @cancel="displayDialog = false" @confirm="doDelete"></ConfirmDialog>
   <v-row v-if="uploading">
     <v-progress-linear :value="100 * progress / files.length"></v-progress-linear>
     <div>
@@ -106,14 +103,17 @@ async function doDelete () {
   </v-row>
   <v-row v-if="!uploadPhotos">
     <v-btn @click="uploadPhotos = true">Upload</v-btn>
-    <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog=true">Delete Album</v-btn>
+    <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog = true">Delete Album</v-btn>
   </v-row>
   <v-row>
-    <v-col v-for="n in imageList" :key="n.key" class="d-flex child-flex" cols="3">
-      <v-img :src="n.url" aspect-ratio="1" class="bg-grey-lighten-2" cover>
-      </v-img>
+    <v-col v-for="n in imageList" :key="n.key" class="d-flex child-flex" cols="2">
+      <v-card :to="`/album/${id}/image/${n.image}`">
+        <v-img min-height="200" min-width="200" :src="n.url">
+        </v-img>
+              <!-- <v-img cover eager transition="false" min-height="200" :src="n.url"></v-img> -->
+
+      </v-card>
     </v-col>
   </v-row>
   <v-btn v-if="!endReached" @click="loadImages(id)">Load More</v-btn>
-
 </template>
