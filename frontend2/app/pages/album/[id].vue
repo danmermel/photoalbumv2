@@ -88,9 +88,6 @@ async function doDelete() {
     :displayDialog="displayDialog" @cancel="displayDialog = false" @confirm="doDelete"></ConfirmDialog>
   <v-row v-if="uploading">
     <v-progress-linear :value="100 * progress / files.length"></v-progress-linear>
-    <div>
-      {{ progress }} / {{ files.length }}
-    </div>
   </v-row>
   <v-row v-if="transforming">
     <v-progress-linear color="yellow-darken-2" indeterminate></v-progress-linear>
