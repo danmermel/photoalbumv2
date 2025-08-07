@@ -1,7 +1,10 @@
 <script setup>
 
+import { VFileUpload } from 'vuetify/labs/VFileUpload'
+
 const { loadImages, imageList, endReached } = useAlbum()
 const { deleteAlbum } = useAlbumList()
+
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
@@ -16,6 +19,7 @@ const uploadPhotos = ref(false)
 const failures = ref([])
 const transforming = ref(false)
 const displayDialog = ref(false)
+
 
 await loadImages(id)
 
@@ -81,25 +85,16 @@ async function doDelete() {
   displayDialog.value = false
   await deleteAlbum(id)
 }
+
+async function test () {
+  console.log("model updated")
+}
 </script>
 
 <template>
   <ConfirmDialog title="Are you sure you want to delete this album?" :text="id" verb="Delete"
     :displayDialog="displayDialog" @cancel="displayDialog = false" @confirm="doDelete"></ConfirmDialog>
-  <v-row v-if="uploading">
-    <v-progress-linear :value="100 * progress / files.length"></v-progress-linear>
-  </v-row>
-  <v-row v-if="transforming">
-    <v-progress-linear color="yellow-darken-2" indeterminate></v-progress-linear>
-  </v-row>
-  <v-row v-if="uploadPhotos && !uploading">
-    <v-file-input v-model="files" small-chips outlined dense multiple label="Add photos to this Album">
-    </v-file-input>
-    <v-btn @click="uploadPhotos = false">Cancel</v-btn>
-    <v-btn :disabled="files.length === 0" @click="onFileChange()">Upload </v-btn>
-  </v-row>
   <v-row v-if="!uploadPhotos">
-    <v-btn @click="uploadPhotos = true">Upload</v-btn>
     <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog = true">Delete Album</v-btn>
   </v-row>
   <v-row>
@@ -107,10 +102,19 @@ async function doDelete() {
       <v-card :to="`/album/${id}/image/${n.image}`">
         <v-img min-height="200" min-width="200" :src="n.url">
         </v-img>
-              <!-- <v-img cover eager transition="false" min-height="200" :src="n.url"></v-img> -->
+        <!-- <v-img cover eager transition="false" min-height="200" :src="n.url"></v-img> -->
 
       </v-card>
     </v-col>
   </v-row>
   <v-btn v-if="!endReached" @click="loadImages(id)">Load More</v-btn>
+  <v-row v-if="uploading">
+    <v-progress-linear indeterminate color="yellow-darken-2"></v-progress-linear>
+    {{ progress }} / {{ files.length }}
+  </v-row>
+  <v-row v-if="transforming">
+    <v-progress-linear color="yellow-darken-2" indeterminate></v-progress-linear>
+  </v-row>
+
+  <v-file-upload style="margin-top:40px" :disabled="uploading || transforming" v-model="files" multiple density="default" @update:modelValue="onFileChange()"></v-file-upload>
 </template>
