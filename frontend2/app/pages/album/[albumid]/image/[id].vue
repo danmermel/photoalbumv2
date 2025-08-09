@@ -15,15 +15,22 @@ const displayDialog = ref(false)
 await loadImage(albumId, imageId)
 
 key.value = `${albumId}/${imageId}`;
+console.log("image is ", image.value)
 
 async function doDelete() {
   console.log("deleting image")
-  displayDialog.value=false
+  displayDialog.value = false
   disableButton.value = true
   await deleteImage(key.value)
   disableButton.value = false
   await navigateTo(`/album/${albumId}`)
 }
+
+function download() {
+  window.location.href = image.value.downloadurl;
+    //is this the best way to do this?
+}
+
 //calculate the next and previous images
 //iterate through array and find the index of the current image
 for (var i = 0; i < imageList.value.length; i++) {
@@ -42,14 +49,27 @@ for (var i = 0; i < imageList.value.length; i++) {
 <template>
   <ConfirmDialog title="Are you sure you want to delete this image?" :text="key" verb="Delete"
     :displayDialog="displayDialog" @cancel="displayDialog = false" @confirm="doDelete"></ConfirmDialog>
-  <v-btn v-if="leftUrl" color="medium-emphasis" icon="mdi-arrow-left"  :to="leftUrl"></v-btn>
-  <v-btn color="medium-emphasis" icon="mdi-image-album"  :to="`/album/${albumId}`"></v-btn>
-  <v-btn v-if="rightUrl" color="medium-emphasis" icon="mdi-arrow-right" :to="rightUrl"></v-btn>
+  <v-row>
+    <v-col justify="left">
+      <v-btn v-if="leftUrl" color="medium-emphasis" icon="mdi-arrow-left" :to="leftUrl"></v-btn>
+
+    </v-col>
+    <v-col justify="center">
+
+      <v-btn color="medium-emphasis" icon="mdi-image-album" :to="`/album/${albumId}`"></v-btn>
+    </v-col>
+    <v-col justify="right">
+      <v-btn v-if="rightUrl" color="medium-emphasis" icon="mdi-arrow-right" :to="rightUrl"></v-btn>
+    </v-col>
+  </v-row>
   <v-card>
     <v-img :src="image.viewurl" min-height="200px" min-width="200px" cover></v-img>
+    <v-chip small v-for="tag in image.tags" :key="tag" :to="`/tag/${tag}`" nuxt>{{ tag }}</v-chip>
+
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn :disabled="disableButton" variant="flat" color="error" @click="displayDialog=true">Delete</v-btn>
+      <v-btn variant="flat" color="warning" @click="download">Download</v-btn>
+      <v-btn :disabled="disableButton" variant="flat" color="error" @click="displayDialog = true">Delete</v-btn>
     </v-card-actions>
   </v-card>
 </template>

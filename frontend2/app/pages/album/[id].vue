@@ -86,7 +86,7 @@ async function doDelete() {
   await deleteAlbum(id)
 }
 
-async function test () {
+async function test() {
   console.log("model updated")
 }
 </script>
@@ -98,7 +98,7 @@ async function test () {
     <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog = true">Delete Album</v-btn>
   </v-row>
   <v-row>
-    <v-col v-for="n in imageList" :key="n.key" class="d-flex child-flex" cols="2">
+    <v-col v-for="n in imageList" :key="n.key" class="d-flex child-flex" sm="4" lg="2" md="3" cols="6">
       <v-card :to="`/album/${id}/image/${n.image}`">
         <v-img min-height="200" min-width="200" :src="n.url">
         </v-img>
@@ -116,5 +116,6 @@ async function test () {
     <v-progress-linear color="yellow-darken-2" indeterminate></v-progress-linear>
   </v-row>
 
-  <v-file-upload style="margin-top:40px" :disabled="uploading || transforming" v-model="files" multiple density="default" @update:modelValue="onFileChange()"></v-file-upload>
+  <v-file-upload style="margin-top:40px" :disabled="uploading || transforming" v-model="files" multiple
+    density="default" @update:modelValue="onFileChange()"></v-file-upload>
 </template>

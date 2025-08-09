@@ -1,7 +1,5 @@
-
-
 <script setup>
-const { sortedAlbumList, loadAlbumList, createAlbum} = useAlbumList();
+const { sortedAlbumList, loadAlbumList, createAlbum } = useAlbumList();
 
 const newAlbumName = ref("");
 const buttonDisable = ref(false);
@@ -20,9 +18,17 @@ async function createNewAlbum() {
 </script>
 
 <template>
-  <v-list>
+  <v-row>
+    <v-col class="d-flex child-flex" sm="4" lg="2" md="3" cols="6" v-for="album in sortedAlbumList" :key="album">
+      <v-card height="200px"  width="300px" image="assets/folder.png" :to="`/album/${album}`"  hover>
+        <v-card-title class="justify-center">{{album}}</v-card-title>
+      </v-card>
+    </v-col>
+  </v-row>
+
+  <!-- <v-list>
     <v-list-item v-for="album in sortedAlbumList" :key="album" :to="`/album/${album}`">{{ album}} </v-list-item> 
-  </v-list>
+  </v-list> -->
   <!-- <div>
     <v-container>
       <v-layout row wrap>
@@ -38,10 +44,6 @@ async function createNewAlbum() {
         </v-flex>
       </v-layout>
     </v-container> -->
-    <v-text-field
-      v-model="newAlbumName"
-      label="New Album name"
-      required
-    ></v-text-field>
-    <v-btn :disabled="buttonDisable" @click="createNewAlbum">Create</v-btn>
+  <v-text-field v-model="newAlbumName" label="New Album name" required></v-text-field>
+  <v-btn :disabled="buttonDisable" @click="createNewAlbum">Create</v-btn>
 </template>
