@@ -26,11 +26,6 @@ async function doDelete() {
   await navigateTo(`/album/${albumId}`)
 }
 
-function download() {
-  window.location.href = image.value.downloadurl;
-    //is this the best way to do this?
-}
-
 //calculate the next and previous images
 //iterate through array and find the index of the current image
 for (var i = 0; i < imageList.value.length; i++) {
@@ -68,7 +63,7 @@ for (var i = 0; i < imageList.value.length; i++) {
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn variant="flat" color="warning" @click="download">Download</v-btn>
+      <v-btn variant="flat" color="warning" :to="image.downloadurl">Download</v-btn>
       <v-btn :disabled="disableButton" variant="flat" color="error" @click="displayDialog = true">Delete</v-btn>
     </v-card-actions>
   </v-card>

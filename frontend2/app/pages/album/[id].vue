@@ -21,7 +21,7 @@ const transforming = ref(false)
 const displayDialog = ref(false)
 
 
-await loadImages(id)
+await loadImages(id, null)
 
 async function onFileChange() {
   uploading.value = true
@@ -97,17 +97,7 @@ async function test() {
   <v-row v-if="!uploadPhotos">
     <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog = true">Delete Album</v-btn>
   </v-row>
-  <v-row>
-    <v-col v-for="n in imageList" :key="n.key" class="d-flex child-flex" sm="4" lg="2" md="3" cols="6">
-      <v-card :to="`/album/${id}/image/${n.image}`">
-        <v-img min-height="200" min-width="200" :src="n.url">
-        </v-img>
-        <!-- <v-img cover eager transition="false" min-height="200" :src="n.url"></v-img> -->
-
-      </v-card>
-    </v-col>
-  </v-row>
-  <v-btn v-if="!endReached" @click="loadImages(id)">Load More</v-btn>
+  <PhotoGrid :imageList="imageList" :endReached="endReached" :id="id" :loadImages="loadImages"></PhotoGrid>
   <v-row v-if="uploading">
     <v-progress-linear indeterminate color="yellow-darken-2"></v-progress-linear>
     {{ progress }} / {{ files.length }}
