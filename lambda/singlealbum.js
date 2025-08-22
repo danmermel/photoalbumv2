@@ -40,7 +40,9 @@ exports.handler = async function (spec) {
       const url = await s3.getSignedUrlPromise('getObject', opts)
       const obj = {
         key,
-        url
+        url,
+        album,
+        image : key.split("/")[1]
       }
       retval.push(obj)
     }
