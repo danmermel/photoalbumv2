@@ -97,7 +97,9 @@ async function test() {
   <v-row v-if="!uploadPhotos">
     <v-btn v-if="imageList.length === 0" color="warning" @click="displayDialog = true">Delete Album</v-btn>
   </v-row>
+
   <PhotoGrid :imageList="imageList" :endReached="endReached" :id="id" :loadImages="loadImages"></PhotoGrid>
+
   <v-row v-if="uploading">
     <v-progress-linear indeterminate color="yellow-darken-2"></v-progress-linear>
     {{ progress }} / {{ files.length }}
@@ -108,4 +110,5 @@ async function test() {
 
   <v-file-upload style="margin-top:40px" :disabled="uploading || transforming" v-model="files" multiple
     density="default" @update:modelValue="onFileChange()"></v-file-upload>
+
 </template>
