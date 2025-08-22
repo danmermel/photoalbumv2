@@ -2,6 +2,9 @@ export default function () {
   const imageList = useState('imageList', () => { return [] })
   const endReached = useState('endReached', () => { return false })
   const marker = useState('marker', () => { return '' })
+  const currentAlbum = useState('currentAlbum', () => { return '' })
+  const currentTag = useState('currentTag', () => { return null })
+
 
   const runtimeConfig = useRuntimeConfig()
   const { auth } = useAuth()
@@ -16,6 +19,20 @@ export default function () {
 
   async function loadImages(albumName, tag) {
     let lastKey
+
+    //first check whether the album/tag being requested is the current one.
+    //if that is the case then we don't do anything, but if it isn't then we 
+    // reset the data and load fresh data
+    console.log("current values are ", currentAlbum.value, currentTag.value)
+    console.log ("incoming values are ", albumName, tag)
+
+    if (albumName != currentAlbum.value || tag != currentTag.value) {
+      console.log("resetting data")
+      await resetData()
+    }
+
+    currentAlbum.value = albumName
+    currentTag.value = tag ? tag : null
 
     if (endReached.value) {
       //nothing else to fetch

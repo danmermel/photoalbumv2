@@ -1,10 +1,9 @@
 <script setup>
-const { loadImages, resetData, imageList, endReached } = useAlbum()
+const { loadImages, imageList, endReached } = useAlbum()
 const route = useRoute()
 const tag = route.params.id
 
-//clear the image list and endreached before searching by tag
-await resetData()
+// searching by tag
 await loadImages(null, tag)
 </script>
 
