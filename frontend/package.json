@@ -1,23 +1,20 @@
 {
-  "name": "frontend",
-  "version": "1.0.0",
+  "name": "nuxt-app",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate"
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.13.6",
-    "core-js": "^3.25.3",
-    "nuxt": "^2.12.2",
-    "vue": "^2.7.10",
-    "vue-server-renderer": "^2.7.10",
-    "vue-template-compiler": "^2.7.10",
-    "vuetify": "^2.6.10"
-  },
-  "devDependencies": {
-    "@nuxtjs/vuetify": "^1.12.3"
+    "nuxt": "^4.0.2",
+    "@mdi/font": "^7.4.47",
+    "@vite-pwa/nuxt": "^1.0.0",
+    "sass": "^1.89.0",
+    "vite-plugin-vuetify": "^2.1.1",
+    "vuetify": "^3.9.3"
   }
 }
