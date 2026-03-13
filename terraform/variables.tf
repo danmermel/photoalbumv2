@@ -5,5 +5,5 @@ variable "bucket_prefix" {
 
 variable "node_version" {
   type = string
-  default = "nodejs22.x"
+  default = "nodejs24.x"
 }

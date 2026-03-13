@@ -28,13 +28,13 @@ jobs:
       - name: Build API Layer
         run: |
           cd lambda
-          ./build_layer.sh prod
+          ./build_layer.sh
 
       # Run terraform deployment
       - name: Terraform Deployment
         run: |
           cd terraform
-          terraform init
+          terraform init -upgrade
           terraform workspace select prod
           terraform apply -auto-approve
           terraform output -json > ../frontend/config.json

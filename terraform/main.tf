@@ -32,7 +32,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 6.36"
     }
   }
 }
@@ -43,7 +43,7 @@ resource "random_string" "apiKey" {
 }
 
 output "awsRegion"  {
-  value = data.aws_region.current.name
+  value = data.aws_region.current.region
 }
 
 output "apiKey"  {
