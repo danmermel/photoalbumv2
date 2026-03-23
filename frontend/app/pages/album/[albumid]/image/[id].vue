@@ -63,7 +63,7 @@ for (var i = 0; i < imageList.value.length; i++) {
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn variant="flat" color="warning" :to="image.downloadurl">Download</v-btn>
+      <v-btn variant="flat" color="warning" :href="image.downloadurl">Download</v-btn>
       <v-btn :disabled="disableButton" variant="flat" color="error" @click="displayDialog = true">Delete</v-btn>
     </v-card-actions>
   </v-card>
