@@ -65,7 +65,13 @@ export default function () {
     } else {
       console.log("loading album ", albumName)
       response = await $fetch(runtimeConfig.public.singleAlbumAPIFunctionUrl.value + "?" + searchParams.toString());
-      marker.value = response.images[response.images.length - 1].key
+      if (response.images.length > 0) {
+        console.log("album has images")
+        marker.value = response.images[response.images.length - 1].key
+      } else {
+        console.log("empty album")
+        marker.value =''
+      }
       endReached.value = response.endReached
 
 
