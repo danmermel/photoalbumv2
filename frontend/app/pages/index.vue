@@ -18,17 +18,24 @@ async function createNewAlbum() {
 </script>
 
 <template>
+  <v-row class="myrow">
+    <v-expansion-panels>
+      <v-expansion-panel>
+        <v-expansion-panel-title>Create New Album</v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <v-text-field v-model="newAlbumName" label="New Album name" required></v-text-field>
+          <v-btn :disabled="buttonDisable" @click="createNewAlbum">Create</v-btn>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+  </v-row>
+
   <v-row>
     <v-col class="d-flex child-flex" sm="12" lg="2" md="12" v-for="album in sortedAlbumList" :key="album">
       <v-card height="200px" width="300px" image="assets/folder.png" :to="`/album/${album}`" hover>
         <v-card-title style="padding-top: 140px; color:blue">{{ album }}</v-card-title>
       </v-card>
     </v-col>
-  </v-row>
-  <v-row class="myrow">
-    <v-text-field v-model="newAlbumName" label="New Album name" required></v-text-field>
-  </v-row>
-  <v-row>
-    <v-btn :disabled="buttonDisable" @click="createNewAlbum">Create</v-btn>
   </v-row>
 </template>
