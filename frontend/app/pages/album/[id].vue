@@ -31,6 +31,12 @@ async function onFileChange() {
   for (let file of files.value) {
     let response
 
+    //first check if the file is valid. has to be .jpg, .jpeg. .png
+    if (!file.name.match(/\.jpg$|\.png$|\.jpeg$|\.webp$|\.mp4$|\.mov$/i) ) {
+      //not something we want to upload
+      failures.value.push(file.name)
+      continue
+    }
     try {
       // get a presigned URL for upload
       const paramsObj = {
