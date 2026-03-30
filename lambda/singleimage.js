@@ -37,6 +37,10 @@ exports.handler = async function (spec) {
     opts.ResponseContentDisposition = `attachment; filename="${key}"`
     retval.downloadurl = await s3.getSignedUrlPromise('getObject', opts)
 
+    // create a url to access the original uploaded file
+    delete opts.ResponseContentDisposition
+    retval.originalurl = await s3.getSignedUrlPromise('getObject', opts)
+
     //now get the tags for the image
     retval.tags = await db.readtags(key)
 

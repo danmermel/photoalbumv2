@@ -11,10 +11,17 @@ const rightUrl = ref('')
 const key = ref('')
 const disableButton = ref(false)
 const displayDialog = ref(false)
+const isVideo = ref(false)
 
 await loadImage(albumId, imageId)
 
+if (imageId.match(/\.mp4$|\.mov$|\.avi$/i)) {
+  isVideo.value=true
+}
+
 key.value = `${albumId}/${imageId}`;
+console.log("imageId is", imageId)
+console.log("is video", isVideo.value)
 console.log("image is ", image.value)
 
 async function doDelete() {
@@ -58,7 +65,8 @@ for (var i = 0; i < imageList.value.length; i++) {
     </v-col>
   </v-row>
   <v-card>
-    <v-img :src="image.viewurl" min-height="200px" min-width="200px" cover></v-img>
+    <video v-if="isVideo" autoplay controls :src="image.originalurl" style="max-height: 600px;"></video>
+    <v-img v-if="!isVideo" :src="image.viewurl" min-height="200px" max-width="100%" cover></v-img>
     <v-chip small v-for="tag in image.tags" :key="tag" :to="`/tag/${tag}`" nuxt>{{ tag }}</v-chip>
 
     <v-card-actions>
@@ -67,4 +75,6 @@ for (var i = 0; i < imageList.value.length; i++) {
       <v-btn :disabled="disableButton" variant="flat" color="error" @click="displayDialog = true">Delete</v-btn>
     </v-card-actions>
   </v-card>
+
+
 </template>
