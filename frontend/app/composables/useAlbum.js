@@ -23,11 +23,11 @@ export default function () {
     //first check whether the album/tag being requested is the current one.
     //if that is the case then we don't do anything, but if it isn't then we 
     // reset the data and load fresh data
-    console.log("current values are ", currentAlbum.value, currentTag.value)
-    console.log ("incoming values are ", albumName, tag)
+    //console.log("current values are ", currentAlbum.value, currentTag.value)
+    //console.log ("incoming values are ", albumName, tag)
 
     if (albumName != currentAlbum.value || tag != currentTag.value) {
-      console.log("resetting data")
+      //console.log("resetting data")
       await resetData()
     }
 
@@ -49,13 +49,13 @@ export default function () {
     if (marker.value) {
       paramsObj.marker = marker.value
       paramsObj.LastEvaluatedKey = marker.value
-      console.log("added marker ", marker.value)
+      //console.log("added marker ", marker.value)
     }
     const searchParams = new URLSearchParams(paramsObj);
 
 
     if (tag) {
-      console.log("loading tag ", tag)
+      //console.log("loading tag ", tag)
       response = await $fetch(runtimeConfig.public.tagViewAPIFunctionUrl.value + "?" + searchParams.toString());
       marker.value = response.LastEvaluatedKey
       endReached.value = response.LastEvaluatedKey ? false : true
@@ -63,13 +63,13 @@ export default function () {
 
 
     } else {
-      console.log("loading album ", albumName)
+      //console.log("loading album ", albumName)
       response = await $fetch(runtimeConfig.public.singleAlbumAPIFunctionUrl.value + "?" + searchParams.toString());
       if (response.images.length > 0) {
-        console.log("album has images")
+        //console.log("album has images")
         marker.value = response.images[response.images.length - 1].key
       } else {
-        console.log("empty album")
+        //console.log("empty album")
         marker.value =''
       }
       endReached.value = response.endReached
@@ -77,7 +77,7 @@ export default function () {
 
     }
 
-    console.log(response, endReached.value, marker.value)
+    //console.log(response, endReached.value, marker.value)
     //frig the response so that we pull out the albumid and imageid separately
   
     imageList.value = imageList.value.concat(response.images.map(function (i){

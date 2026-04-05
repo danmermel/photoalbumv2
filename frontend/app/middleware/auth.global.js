@@ -5,7 +5,7 @@
     // if we are not logged in
     if (!isLoggedIn()) {
       // see if we have an apikey stashed in local storage
-      console.log('loading auth from localStorage')
+      //console.log('loading auth from localStorage')
       loadFromLocalStorage()
     }
   

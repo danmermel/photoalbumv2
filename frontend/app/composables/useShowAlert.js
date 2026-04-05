@@ -16,7 +16,7 @@ export default function () {
       alert.value.show = true
       //only set a timer if closable is false
       if (closable === false) {
-        console.log("this one is not closable")
+        //console.log("this one is not closable")
         setTimeout(() => {
           alert.value.show = false
         }, 5000)

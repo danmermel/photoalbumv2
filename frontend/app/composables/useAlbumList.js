@@ -8,7 +8,7 @@ export default function () {
   //load album list from API
   async function loadAlbumList() {
     const response = await $fetch(runtimeConfig.public.listAlbumsAPIFunctionUrl.value + "?apikey=" + auth.value.apiKey);
-    console.log(response)
+    //console.log(response)
     albumList.value = response.albums
   }
 
@@ -21,10 +21,10 @@ export default function () {
       albumList.value.push(newAlbumName)  //add to the existing list of albums
       showAlert("New Album created")
       await navigateTo(`/album/${newAlbumName}`)
-      console.log(albumList.value)
+      //console.log(albumList.value)
     } catch {
       showAlert("Failed to create new Album", "error")
-      console.error("failed to add album")
+      //console.error("failed to add album")
     }
   }
 
@@ -48,11 +48,11 @@ export default function () {
       //found it. Remove it 
       albumList.value.splice(i, 1)
     }
-    console.log("calling show alert")
+    //console.log("calling show alert")
     showAlert("Album Deleted successfully")
     await navigateTo('/')
   } catch (e) {
-    console.error(e)
+    //console.error(e)
   }
 
 

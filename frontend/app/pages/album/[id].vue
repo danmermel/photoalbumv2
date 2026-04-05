@@ -46,7 +46,7 @@ async function onFileChange() {
       };
       const searchParams = new URLSearchParams(paramsObj);
       response = await $fetch(runtimeConfig.public.uploadAPIFunctionUrl.value + "?" + searchParams.toString());
-      console.log("url response is ", response)
+      //console.log("url response is ", response)
       const uploadURL = response.url
 
       // put to that presigned URL
@@ -60,7 +60,7 @@ async function onFileChange() {
       })
       //console.log(response)
     } catch (e) {
-      console.log('error', e)
+      //console.log('error', e)
       failures.value.push(file.name)
     }
     progress.value++
@@ -77,10 +77,10 @@ async function onFileChange() {
     await loadImages(id)
     transforming.value = false
     if (failures.value.length === 0) {
-      console.log("no errors")
+      //console.log("no errors")
       showAlert('Images uploaded successfully')
     } else {
-      console.log("have errors")
+      //console.log("have errors")
       showAlert(`Images uploaded but with errors: ${failures.value}`, "warning", true)
     }
   }, 5000)
