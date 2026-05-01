@@ -9,3 +9,6 @@ config.json
 *.jpg 
 *.JPG
 generate.sh
+
+ffmpeg/
+*.md5

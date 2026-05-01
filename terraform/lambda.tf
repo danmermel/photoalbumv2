@@ -3,7 +3,7 @@ data "archive_file" "lambda" {
   source_dir  = "../lambda"
   type     = "zip"
   output_path = "../lambda.zip"
-  excludes = [ "node_modules", "nodejs", "nodejs-stage.zip", "nodejs-prod.zip"]
+  excludes = [ "node_modules", "nodejs", "nodejs-stage.zip", "nodejs-prod.zip", "ffmpeg-stage.zip", "ffmpeg-prod.zip", "ffmpeg"]
 }
 
 // create the lambda functions
@@ -113,6 +113,31 @@ resource "aws_cloudwatch_log_group" "lambdaLGremover" {
 output "removeLambda"  {
   value = aws_lambda_function.remover.function_name
 }
+
+resource "aws_lambda_function" "videoThumbnailer" {
+  filename      = data.archive_file.lambda.output_path
+  function_name = "videothumbnailerv2-${terraform.workspace}"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "videothumbnailer.handler"
+  runtime = var.node_version
+  timeout = 10
+  source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
+  layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn, aws_lambda_layer_version.ffmpegLambdaLayer.arn]
+
+  environment {
+    variables = {
+      BUCKET = aws_s3_bucket.photoalbum-images.id
+      THUMB_BUCKET = aws_s3_bucket.photoalbum-thumbs.id
+      LARGE_THUMBS_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_group" "lambdaLGvideoThumbnailer" {
+  name              = "/aws/lambda/${aws_lambda_function.videoThumbnailer.function_name}"
+  retention_in_days = 7
+}
+
 
 // List Albums API
 module "listAlbumsAPI" {
