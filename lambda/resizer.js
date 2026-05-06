@@ -14,6 +14,7 @@ const BUCKET = process.env.BUCKET;
 const THUMB_BUCKET = process.env.THUMB_BUCKET;
 const LARGE_THUMB_BUCKET = process.env.LARGE_THUMB_BUCKET;
 const REKO_LAMBDA = process.env.REKO_LAMBDA;
+const VIDEO_THUMBNAILER_LAMBDA = process.env.VIDEO_THUMBNAILER_LAMBDA
 
 exports.handler = async function (event) {
 
@@ -88,25 +89,15 @@ exports.handler = async function (event) {
       }).promise();
       console.log("invoked reko lambda with key ", key, "and lambda name ", REKO_LAMBDA)
 
-    } else {  // not a jpg so insert a placeholder image
-      console.log("inserting placeholder...")
-      const file = fs.readFileSync('./play.jpg');
-      await s3.putObject({
-        Body: file,
-        Bucket: THUMB_BUCKET,
-        ACL: "private",
-        ContentType: 'image/jpg',
-        Key: key,
-      }).promise()
+    } else {  // not a jpg so it's  a video (because frontend has filtered out everytrhging else)
+       console.log("invoke videothumb lambda");
+      await lambda.invoke({
+        "FunctionName": VIDEO_THUMBNAILER_LAMBDA,
+        "Payload": JSON.stringify({
+          key
+        })
+      }).promise();      
 
-      console.log('writing placeholder to S3')
-      await s3.putObject({
-          Body: file,
-          Bucket: LARGE_THUMB_BUCKET,
-          ACL: "private",
-          ContentType: 'image/jpg',
-          Key: key,
-        }).promise()
     }
   }
 }

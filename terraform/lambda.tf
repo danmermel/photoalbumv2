@@ -72,6 +72,7 @@ resource "aws_lambda_function" "resizer" {
       LARGE_THUMB_BUCKET = aws_s3_bucket.photoalbum-large-thumbs.id
       BUCKET = aws_s3_bucket.photoalbum-images.id
       REKO_LAMBDA = aws_lambda_function.reko.id
+      VIDEO_THUMBNAILER_LAMBDA = aws_lambda_function.videoThumbnailer.id
     }
   }
 }
