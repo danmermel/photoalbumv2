@@ -1,10 +1,10 @@
-
-const AWS = require('aws-sdk');
+// ...existing code...
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const db = require('./db.js');
 
-const s3 = new AWS.S3({
-  signatureVersion: 'v4',
-});
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const s3 = new S3Client({ region: REGION });
 
 const BUCKET = process.env.BUCKET;
 const LARGE_THUMBS_BUCKET = process.env.LARGE_THUMBS_BUCKET;
@@ -23,23 +23,25 @@ exports.handler = async function (spec) {
   if (!key) {
     return { statusCode: 400, body: '{"ok": false,"msg": "Missing image key parameter"}' }
   }
-  let data
   let retval = {"ok":true}
 
   try {
 
     // create presigned urls that allows object to be fetched and downloaded for 7 days
-    const opts = { Bucket: LARGE_THUMBS_BUCKET, Key: key, Expires: 60 * 60 * 24 * 7 }
-    retval.viewurl = await s3.getSignedUrlPromise('getObject', opts)
+    const viewCmd = new GetObjectCommand({ Bucket: LARGE_THUMBS_BUCKET, Key: key })
+    retval.viewurl = await getSignedUrl(s3, viewCmd, { expiresIn: 60 * 60 * 24 * 7 })
 
     // create a download URL for the original image file
-    opts.Bucket = BUCKET
-    opts.ResponseContentDisposition = `attachment; filename="${key}"`
-    retval.downloadurl = await s3.getSignedUrlPromise('getObject', opts)
+    const downloadCmd = new GetObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      ResponseContentDisposition: `attachment; filename="${key}"`
+    })
+    retval.downloadurl = await getSignedUrl(s3, downloadCmd, { expiresIn: 60 * 60 * 24 * 7 })
 
-    // create a url to access the original uploaded file
-    delete opts.ResponseContentDisposition
-    retval.originalurl = await s3.getSignedUrlPromise('getObject', opts)
+    // create a url to access the original uploaded file (no content-disposition)
+    const originalCmd = new GetObjectCommand({ Bucket: BUCKET, Key: key })
+    retval.originalurl = await getSignedUrl(s3, originalCmd, { expiresIn: 60 * 60 * 24 * 7 })
 
     //now get the tags for the image
     retval.tags = await db.readtags(key)
@@ -52,3 +54,4 @@ exports.handler = async function (spec) {
   return { statusCode: 200, body: JSON.stringify(retval) }
 
 }
+// ...existing code...

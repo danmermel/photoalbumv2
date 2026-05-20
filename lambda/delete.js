@@ -1,8 +1,7 @@
+const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  signatureVersion: 'v4',
-});
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const s3 = new S3Client({ region: REGION });
 
 const BUCKET = process.env.BUCKET;
 const API_KEY = process.env.API_KEY;
@@ -26,10 +25,10 @@ exports.handler = async function (spec) {
   };
 
   try {
-    await s3.deleteObject(params).promise()
+    await s3.send(new DeleteObjectCommand(params));
     return { statusCode: 200, body: '{"ok": true,"msg": "Image Deleted"}' }
   } catch (e) {
-    console.log("Error creating album: ", e)
+    console.log("Error deleting image: ", e)
     return { statusCode: 500, body: '{"ok": false,"msg": "Error deleting image"}' }
   }
 

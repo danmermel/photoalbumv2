@@ -1,20 +1,19 @@
-var AWS = require('aws-sdk')
+const { DynamoDBClient, QueryCommand, BatchWriteItemCommand } = require("@aws-sdk/client-dynamodb");
 
-var dynamodb = new AWS.DynamoDB({ "region": "eu-west-1" });
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const TABLE = process.env.TABLE;
 
-const TABLE = process.env.TABLE
-
-var docClient = new AWS.DynamoDB.DocumentClient()
+const dynamodb = new DynamoDBClient({ region: REGION });
 
 var read = async function (key) {
-  var obj = {
+  const obj = {
     TableName: TABLE,
     IndexName: "image_id-index",
     KeyConditionExpression: "image_id = :k",
     ExpressionAttributeValues: { ":k": { "S": key } },
     ProjectionExpression: "id"
-  }
-  return await dynamodb.query(obj).promise();
+  };
+  return await dynamodb.send(new QueryCommand(obj));
 }
 
 var readtags = async function (key) {
@@ -24,12 +23,12 @@ var readtags = async function (key) {
     KeyConditionExpression: "image_id = :k",
     ExpressionAttributeValues: { ":k": { "S": key } },
     ProjectionExpression: "keyword"
-  }
-  let resp =  await dynamodb.query(obj).promise();
-  resp = resp.Items.map(function (i){
-    return i.keyword.S
-  })
-  return resp
+  };
+  let resp = await dynamodb.send(new QueryCommand(obj));
+  resp = (resp.Items || []).map(function (i) {
+    return i.keyword.S;
+  });
+  return resp;
 }
 
 var readkeys = async function (tag, ExclusiveStartKey) {
@@ -40,26 +39,24 @@ var readkeys = async function (tag, ExclusiveStartKey) {
     ExpressionAttributeValues: { ":k": { "S": tag } },
     ProjectionExpression: "image_id",
     Limit: 25
-  }
-  //if this param is supplied (for pagination of results) we pass it in.
+  };
   if (ExclusiveStartKey) {
-    obj.ExclusiveStartKey = ExclusiveStartKey
+    obj.ExclusiveStartKey = ExclusiveStartKey;
   }
 
-  let resp =  await dynamodb.query(obj).promise();
-  const keys = resp.Items.map(function (i){
-    return i.image_id.S
-  })
-  return {keys, LastEvaluatedKey: resp.LastEvaluatedKey} 
+  let resp = await dynamodb.send(new QueryCommand(obj));
+  const keys = (resp.Items || []).map(function (i) {
+    return i.image_id.S;
+  });
+  return { keys, LastEvaluatedKey: resp.LastEvaluatedKey };
 }
-var remove = async function (items) {
 
-  //this is the object  you have to build to insert into dynamodb
+var remove = async function (items) {
   var params = {
     RequestItems: {}
-  }
+  };
 
-  params.RequestItems[TABLE] = []
+  params.RequestItems[TABLE] = [];
 
   for (i in items) {
     var item = items[i];
@@ -69,16 +66,15 @@ var remove = async function (items) {
           id: { S: item.id.S }
         }
       }
-    }
-    params.RequestItems[TABLE].push(obj)
+    };
+    params.RequestItems[TABLE].push(obj);
   }
-  //console.log(params);
-  
-  await dynamodb.batchWriteItem(params).promise();
+
+  await dynamodb.send(new BatchWriteItemCommand(params));
 }
 
-const write = async function(params) {
-  return await dynamodb.batchWriteItem(params).promise()
+const write = async function (params) {
+  return await dynamodb.send(new BatchWriteItemCommand(params));
 }
 
 module.exports = {

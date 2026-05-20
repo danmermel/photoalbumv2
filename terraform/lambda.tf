@@ -122,6 +122,7 @@ resource "aws_lambda_function" "videoThumbnailer" {
   handler       = "videothumbnailer.handler"
   runtime = var.node_version
   timeout = 10
+  memory_size = 2048
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn, aws_lambda_layer_version.ffmpegLambdaLayer.arn]
 

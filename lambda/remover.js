@@ -1,8 +1,8 @@
-const AWS = require('aws-sdk');
+const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const db = require('./db.js');
-const s3 = new AWS.S3({
-  signatureVersion: 'v4',
-});
+
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const s3 = new S3Client({ region: REGION });
 
 const THUMB_BUCKET = process.env.THUMB_BUCKET
 const LARGE_THUMBS_BUCKET = process.env.LARGE_THUMBS_BUCKET
@@ -12,21 +12,21 @@ exports.handler = async function (event) {
   const key = event.Records[0].s3.object.key;
 
   // delete the thumbnail associated with the deleted image
-  await s3.deleteObject({ Key: key, Bucket: THUMB_BUCKET }).promise()
-  await s3.deleteObject({ Key: key, Bucket: LARGE_THUMBS_BUCKET }).promise()
-
-  //  delete the db data associated with the deleted image
   try {
-    const data = await db.read(key)
-    console.log(data)
-    if (data.Items.length > 0) {
-      await db.remove(data.Items)
-    }
+    await s3.send(new DeleteObjectCommand({ Key: key, Bucket: THUMB_BUCKET }));
+    await s3.send(new DeleteObjectCommand({ Key: key, Bucket: LARGE_THUMBS_BUCKET }));
   } catch (e) {
-    console.log("Error removing data from the database: ", e)
+    console.log("Error deleting thumbnails: ", e);
   }
 
-
-
-
+  // delete the db data associated with the deleted image
+  try {
+    const data = await db.read(key);
+    console.log(data);
+    if (data.Items && data.Items.length > 0) {
+      await db.remove(data.Items);
+    }
+  } catch (e) {
+    console.log("Error removing data from the database: ", e);
+  }
 }

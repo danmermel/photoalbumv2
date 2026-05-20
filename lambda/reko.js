@@ -1,6 +1,8 @@
-const AWS = require('aws-sdk');
+const { RekognitionClient, DetectLabelsCommand } = require("@aws-sdk/client-rekognition");
 const db = require('./db.js');
-const rekognition = new AWS.Rekognition({ "region": "eu-west-1" });
+
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const rekognition = new RekognitionClient({ region: REGION });
 const BUCKET = process.env.BUCKET
 const TABLE = process.env.TABLE
 
@@ -9,7 +11,7 @@ function prepareData(image_id, data, locarray) {
 
   var kuuid = require('kuuid')
   //add the location words received, if any
-  var wordList = locarray.map (function (e){
+  var wordList = (locarray || []).map (function (e){
     return {"name": e, "confidence": 100}
   })
   console.log("preparing data:")
@@ -17,11 +19,6 @@ function prepareData(image_id, data, locarray) {
   console.log(data)
   for (var i in data.Labels) {
     wordList.push({ name: data.Labels[i].Name.toLowerCase(), confidence: data.Labels[i].Confidence })
-    //if (data.Labels[i].Parents){
-    //    data.Labels[i].Parents.map(function(s) {
-    //    wordList.push({ name: s.Name.toLowerCase(), confidence: data.Labels[i].Confidence})
-    //  })
-    // } 
   }
   console.log("wordlist is ", wordList)
   //sorts the list by confidence
@@ -97,10 +94,9 @@ exports.handler = async function (event) {
     MinConfidence: 50
   };
   console.log(rekoParams)
-  const labels = await rekognition.detectLabels(rekoParams).promise()
+  const labels = await rekognition.send(new DetectLabelsCommand(rekoParams));
   //prepare data for insertion
   const params = prepareData(key, labels, locarray);
-  //console.log(JSON.stringify(params));
   //call dynamodb to save the data
   await db.write(params)
 }

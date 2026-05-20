@@ -1,8 +1,9 @@
+// ...existing code...
+const { S3Client, ListObjectsCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  signatureVersion: 'v4',
-});
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const s3 = new S3Client({ region: REGION });
 
 const BUCKET = process.env.BUCKET;
 const API_KEY = process.env.API_KEY;
@@ -31,13 +32,14 @@ exports.handler = async function (spec) {
       Marker: marker,
       MaxKeys: 20
     }
-    data = await s3.listObjects(params).promise()
+    data = await s3.send(new ListObjectsCommand(params))
 
-    for (var i = 0; i < data.Contents.length; i++) {
-      const key = data.Contents[i].Key
+    const contents = data.Contents || []
+    for (var i = 0; i < contents.length; i++) {
+      const key = contents[i].Key
       // create presigned url that allows object to be fetched for 7 days
-      const opts = { Bucket: BUCKET, Key: key, Expires: 60 * 60 * 24 * 7 }
-      const url = await s3.getSignedUrlPromise('getObject', opts)
+      const getCmd = new GetObjectCommand({ Bucket: BUCKET, Key: key })
+      const url = await getSignedUrl(s3, getCmd, { expiresIn: 60 * 60 * 24 * 7 })
       const obj = {
         key,
         url,
@@ -54,3 +56,4 @@ exports.handler = async function (spec) {
   return { statusCode: 200, body: JSON.stringify({ "ok": true, images: retval, endReached: !data.IsTruncated }) }
 
 }
+// ...existing code...

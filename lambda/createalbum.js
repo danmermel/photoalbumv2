@@ -1,8 +1,7 @@
+const { S3Client, HeadObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3({
-  signatureVersion: 'v4',
-});
+const REGION = process.env.AWS_REGION || "eu-west-1";
+const s3 = new S3Client({ region: REGION });
 
 const BUCKET = process.env.BUCKET;
 const API_KEY = process.env.API_KEY;
@@ -29,20 +28,23 @@ exports.handler = async function (spec) {
     Bucket: BUCKET
   };
   try {
-
-    await s3.headObject(params).promise()
+    await s3.send(new HeadObjectCommand(params));
     return { statusCode: 409, body: '{"ok": false,"msg": "Album name already exists"}' }
   } catch (e) {
-    //console.log("e is ", e)
-    //do nothing
-    //console.log("Bucket does not exist.. creating...")
+    // If the object is not found we get a 404/NotFound — continue to create.
+    // For other errors, return a 500.
+    const isNotFound = e.name === 'NotFound' || (e.$metadata && e.$metadata.httpStatusCode === 404);
+    if (!isNotFound) {
+      console.error("Error checking album existence:", e);
+      return { statusCode: 500, body: '{"ok": false,"msg": "Error checking album"}' }
+    }
   }
-  // if you get here, create the bucket
+  // if you get here, create the album placeholder object
   try {
-    await s3.putObject(params).promise()
+    await s3.send(new PutObjectCommand(params));
     return { statusCode: 200, body: '{"ok": true,"msg": "Album created"}' }
   } catch (e) {
-    //console.log("Error creating album: ", e)
+    console.error("Error creating album:", e)
     return { statusCode: 500, body: '{"ok": false,"msg": "Error creating album:"}' }
   }
 
