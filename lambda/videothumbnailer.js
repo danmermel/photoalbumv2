@@ -12,7 +12,7 @@ const s3 = new S3Client({ region: REGION });
 
 const BUCKET = process.env.BUCKET;
 const THUMB_BUCKET = process.env.THUMB_BUCKET;
-const LARGE_THUMB_BUCKET = process.env.LARGE_THUMB_BUCKET;
+const LARGE_THUMBS_BUCKET = process.env.LARGE_THUMBS_BUCKET;
 
 function runFfmpeg(command) {
   return new Promise((resolve, reject) => {
@@ -42,9 +42,9 @@ exports.handler = async function (event) {
   // run ffmpeg to take a snapshot
   const command = ffmpeg()
     .input(geturl)
-    .inputOptions('-seekable 0')
+    .inputOptions('-ss 0')
     .output(outpath)
-    .outputOptions(['-format singlejpeg', '-vframes 1']);
+    .outputOptions(['-vframes 1', '-q:v 5', '-vf scale=320:-1', '-f image2']);
 
   //console.log("command is ", command);
   await runFfmpeg(command);
@@ -52,10 +52,21 @@ exports.handler = async function (event) {
   // upload the generated thumbnail to S3
   console.log("uploading to s3: ", THUMB_BUCKET, keyjpg);
   console.log("file exists", fs.existsSync(outpath))
-  const fileStream = fs.createReadStream(outpath);
+  let fileStream = fs.createReadStream(outpath);
   await s3.send(new PutObjectCommand({
     Bucket: THUMB_BUCKET,
-    Key: keyjpg,
+    Key: `${key}.jpg`,
+    Body: fileStream,
+    ContentType: 'image/jpeg'
+  }));
+
+  // upload the generated thumbnail to S3 again but with larger size for the gallery
+  console.log("uploading to s3: ", LARGE_THUMBS_BUCKET, keyjpg);
+  console.log("file exists", fs.existsSync(outpath))
+  fileStream = fs.createReadStream(outpath);
+  await s3.send(new PutObjectCommand({
+    Bucket: LARGE_THUMBS_BUCKET,
+    Key: `${key}.jpg`,
     Body: fileStream,
     ContentType: 'image/jpeg'
   }));

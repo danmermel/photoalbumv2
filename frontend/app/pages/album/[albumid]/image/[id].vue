@@ -5,7 +5,7 @@ const route = useRoute()
 
 
 const albumId = route.params.albumid
-const imageId = route.params.id
+let imageId = route.params.id
 
 const leftUrl = ref('')
 const rightUrl = ref('')
@@ -14,11 +14,14 @@ const disableButton = ref(false)
 const displayDialog = ref(false)
 const isVideo = ref(false)
 
+if (imageId.match(/\.mp4\.jpg$|\.mov\.jpg$|\.avi\.jpg$/i)) {
+  isVideo.value=true
+  imageId = imageId.substring(0, imageId.length - 4) //remove the .jpg at the end to get the video key
+}
+
 await loadImage(albumId, imageId)
 
-if (imageId.match(/\.mp4$|\.mov$|\.avi$/i)) {
-  isVideo.value=true
-}
+
 
 key.value = `${albumId}/${imageId}`;
 //console.log("imageId is", imageId)
