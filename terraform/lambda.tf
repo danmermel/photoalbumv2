@@ -92,7 +92,7 @@ resource "aws_lambda_function" "remover" {
   function_name = "removerv2-${terraform.workspace}"
   role          = aws_iam_role.lambda_role.arn
   handler       = "remover.handler"
-  runtime = "nodejs16.x"
+  runtime = var.node_version
   timeout = 10
   source_code_hash = filebase64sha256(data.archive_file.lambda.output_path)
   layers = [aws_lambda_layer_version.nodeModulesLambdaLayer.arn]
