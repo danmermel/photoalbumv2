@@ -53,10 +53,10 @@ else
   if [ ! -d ffmpeg ]
   then
     echo "Downloading ffmpeg from s3"
-    aws s3 cp "s3://photoalbumv2-code-${STAGE}/ffmpeg.zip" .
+    aws s3 cp "s3://photoalbumv2-code-${STAGE}/ffmpeg-${STAGE}.zip" .
     mkdir ffmpeg
     cd ffmpeg
-    unzip ../ffmpeg.zip
+    unzip ../ffmpeg-${STAGE}.zip
     cd ..
   fi
 fi
