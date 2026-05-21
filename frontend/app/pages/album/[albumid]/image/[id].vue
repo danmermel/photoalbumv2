@@ -17,6 +17,7 @@ const isVideo = ref(false)
 if (imageId.match(/\.mp4\.jpg$|\.mov\.jpg$|\.avi\.jpg$/i)) {
   isVideo.value=true
   imageId = imageId.substring(0, imageId.length - 4) //remove the .jpg at the end to get the video key
+  //normally the filename is the same in all buckets, but by making a thumbnail for the video, the filename has .jpg at the end of it, so have to remove that to get the correct key for the video
 }
 
 await loadImage(albumId, imageId)
